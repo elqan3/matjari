@@ -54,9 +54,18 @@ async function DashboardContent() {
             <p className="mt-2 text-sm text-slate-500">
               رابط المتجر: /store/{store.slug}
             </p>
-            <p className="mt-5 text-sm text-slate-600">
-              الخطوة التالية هي بناء إدارة المنتجات والطلبات.
-            </p>
+           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+  <Link
+    href="/dashboard/settings"
+    className="rounded-xl bg-slate-900 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-slate-700"
+  >
+    إعدادات المتجر
+  </Link>
+
+  <div className="rounded-xl border border-slate-200 px-5 py-3 text-sm text-slate-600">
+    إدارة المنتجات — قيد التطوير
+  </div>
+</div>
           </div>
         ) : (
           <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
