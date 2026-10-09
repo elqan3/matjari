@@ -77,3 +77,81 @@ export async function updateStoreSettings(formData: FormData) {
 
   redirect("/dashboard/settings?saved=1");
 }
+
+
+
+export async function saveStoreLogo(
+  objectPath: string
+): Promise<
+  | { ok: true; logoUrl: string }
+  | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+
+  const { data: claimsData, error: claimsError } =
+    await supabase.auth.getClaims();
+
+  const userId = claimsData?.claims?.sub;
+
+  if (claimsError || typeof userId !== "string") {
+    return {
+      ok: false,
+      error: "انتهت جلسة تسجيل الدخول. سجّل الدخول مجددًا.",
+    };
+  }
+
+  const { data: store, error: storeError } = await supabase
+    .from("stores")
+    .select("id")
+    .eq("owner_id", userId)
+    .maybeSingle();
+
+  if (storeError || !store) {
+    console.error("Failed to verify store for logo:", storeError);
+
+    return {
+      ok: false,
+      error: "تعذر التحقق من ملكية المتجر.",
+    };
+  }
+
+  const expectedPrefix = `${userId}/${store.id}/`;
+const validLogoPath =
+  objectPath.startsWith(expectedPrefix) &&
+  /^logo-\d+\.(jpg|png|webp)$/.test(
+    objectPath.slice(expectedPrefix.length)
+  );
+
+if (!validLogoPath) {
+    return {
+      ok: false,
+      error: "مسار ملف الشعار غير صالح.",
+    };
+  }
+
+  const { data: publicUrlData } = supabase.storage
+  .from("store-assets")
+  .getPublicUrl(objectPath);
+
+  const logoUrl = publicUrlData.publicUrl;
+
+  const { error: updateError } = await supabase
+    .from("stores")
+    .update({ logo_url: logoUrl })
+    .eq("id", store.id)
+    .eq("owner_id", userId);
+
+  if (updateError) {
+    console.error("Failed to save store logo URL:", updateError);
+
+    return {
+      ok: false,
+      error: "رُفعت الصورة لكن تعذر حفظ رابطها. حاول مجددًا.",
+    };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/settings");
+
+  return { ok: true, logoUrl };
+}

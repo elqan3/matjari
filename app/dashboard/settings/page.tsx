@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { updateStoreSettings } from "./actions";
+import LogoUpload from "./logo-upload";
 
 type SettingsPageProps = {
   searchParams: Promise<{
@@ -37,10 +38,10 @@ async function StoreSettingsContent({
   }
 
   const { data: store, error } = await supabase
-    .from("stores")
-    .select("name, slug, description")
-    .eq("owner_id", userId)
-    .maybeSingle();
+  .from("stores")
+  .select("id, name, slug, description, logo_url")
+  .eq("owner_id", userId)
+  .maybeSingle();
 
   if (error) {
     console.error("Failed to load store settings:", error);
@@ -73,6 +74,11 @@ async function StoreSettingsContent({
             عدّل بيانات متجرك الأساسية. ستظهر التغييرات
             في واجهة متجرك العامة عند تجهيزها.
           </p>
+          <LogoUpload
+  userId={userId}
+  storeId={store.id}
+  initialLogoUrl={store.logo_url}
+/>
 
           {params.saved === "1" && (
             <p

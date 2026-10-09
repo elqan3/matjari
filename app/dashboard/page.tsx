@@ -61,10 +61,18 @@ async function DashboardContent() {
   >
     إعدادات المتجر
   </Link>
-
-  <div className="rounded-xl border border-slate-200 px-5 py-3 text-sm text-slate-600">
-    إدارة المنتجات — قيد التطوير
-  </div>
+  <Link
+  href="/dashboard/categories"
+  className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
+>
+  إدارة التصنيفات
+</Link>
+  <Link
+  href="/dashboard/products"
+  className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
+>
+  إدارة المنتجات
+</Link>
 </div>
           </div>
         ) : (
