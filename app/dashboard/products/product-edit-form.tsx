@@ -7,33 +7,51 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { createProduct, uploadProductImage } from "./actions";
+import { updateProduct, uploadProductImage } from "./actions";
 
 type Category = {
   id: string;
   name: string;
 };
 
-export default function ProductCreateForm({
-  categories,
-}: {
+type Product = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  compare_at_price: number | null;
+  image_url: string | null;
+  category_id: string | null;
+};
+
+type Props = {
+  product: Product;
   categories: Category[];
-}) {
+  onCancel: () => void;
+};
+
+export default function ProductEditForm({
+  product,
+  categories,
+  onCancel,
+}: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [imagePath, setImagePath] = useState("");
   const [preview, setPreview] = useState("");
+  const [price, setPrice] = useState(String(product.price));
+  const [compareAtPrice, setCompareAtPrice] = useState(
+    product.compare_at_price == null
+      ? ""
+      : String(product.compare_at_price)
+  );
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
-
-  const [price, setPrice] = useState("");
-  const [compareAtPrice, setCompareAtPrice] = useState("");
 
   const currentPrice = Number(price);
   const oldPrice = Number(compareAtPrice);
 
   const discount =
     compareAtPrice.trim() !== "" &&
-    price.trim() !== "" &&
     Number.isFinite(currentPrice) &&
     Number.isFinite(oldPrice) &&
     oldPrice > currentPrice &&
@@ -44,9 +62,7 @@ export default function ProductCreateForm({
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.target.files?.[0] ?? null;
 
-    if (preview) {
-      URL.revokeObjectURL(preview);
-    }
+    if (preview) URL.revokeObjectURL(preview);
 
     setFile(selected);
     setImagePath("");
@@ -83,93 +99,77 @@ export default function ProductCreateForm({
     event.preventDefault();
     setMessage("");
 
-    if (price.trim() === "" || !Number.isFinite(currentPrice) || currentPrice < 0) {
-      setMessage("أدخل سعرًا حاليًا صحيحًا.");
+    if (file && !imagePath) {
+      setMessage("ارفع الصورة الجديدة أولًا.");
       return;
     }
 
     if (
       compareAtPrice.trim() !== "" &&
-      (
-        !Number.isFinite(oldPrice) ||
-        oldPrice <= currentPrice ||
-        oldPrice <= 0
-      )
+      (!Number.isFinite(oldPrice) || oldPrice <= currentPrice)
     ) {
       setMessage("يجب أن يكون السعر قبل الخصم أكبر من السعر الحالي.");
       return;
     }
 
-    if (file && !imagePath) {
-      setMessage("ارفع الصورة أولًا، أو أزلها إذا كنت لا تريد صورة للمنتج.");
-      return;
-    }
-
     const formData = new FormData(event.currentTarget);
+    formData.set("productId", product.id);
     formData.set("imagePath", imagePath);
 
     startTransition(async () => {
-      await createProduct(formData);
+      await updateProduct(formData);
     });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label
-          htmlFor="product-name"
+          htmlFor={`edit-name-${product.id}`}
           className="mb-2 block text-sm font-medium"
         >
           اسم المنتج *
         </label>
-
         <input
-          id="product-name"
+          id={`edit-name-${product.id}`}
           name="name"
           required
           maxLength={120}
-          placeholder="مثال: قميص قطني"
-          className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+          defaultValue={product.name}
+          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
         />
       </div>
 
       <div>
         <label
-          htmlFor="product-price"
+          htmlFor={`edit-price-${product.id}`}
           className="mb-2 block text-sm font-medium"
         >
           السعر الحالي *
         </label>
-
         <input
-          id="product-price"
+          id={`edit-price-${product.id}`}
           name="price"
           type="number"
           required
           min="0"
           step="0.01"
           inputMode="decimal"
-          placeholder="0.00"
           value={price}
           onChange={(event) => setPrice(event.target.value)}
-          className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
         />
-
-        <p className="mt-2 text-xs text-slate-500">
-          أدخل السعر بالعملة التي تعتمدها لمتجرك.
-        </p>
       </div>
 
       <div>
         <label
-          htmlFor="product-compare-price"
+          htmlFor={`edit-compare-price-${product.id}`}
           className="mb-2 block text-sm font-medium"
         >
           السعر قبل الخصم (اختياري)
         </label>
-
         <input
-          id="product-compare-price"
+          id={`edit-compare-price-${product.id}`}
           name="compareAtPrice"
           type="number"
           min="0"
@@ -178,22 +178,17 @@ export default function ProductCreateForm({
           placeholder="اتركه فارغًا إذا لم يوجد خصم"
           value={compareAtPrice}
           onChange={(event) => setCompareAtPrice(event.target.value)}
-          className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
         />
 
         {discount !== null && (
-          <div className="mt-3 rounded-lg border border-green-200 bg-green-50 p-3">
-            <p className="text-sm font-semibold text-green-800">
-              نسبة الخصم: {discount}%
-            </p>
-            <p className="mt-1 text-sm text-green-700">
-              التوفير: {(oldPrice - currentPrice).toFixed(2)}
-            </p>
-          </div>
+          <p className="mt-2 text-sm font-medium text-green-700">
+            خصم {discount}% — توفير{" "}
+            {(oldPrice - currentPrice).toFixed(2)}
+          </p>
         )}
 
         {compareAtPrice.trim() !== "" &&
-          price.trim() !== "" &&
           Number.isFinite(currentPrice) &&
           Number.isFinite(oldPrice) &&
           oldPrice <= currentPrice && (
@@ -205,143 +200,119 @@ export default function ProductCreateForm({
 
       <div>
         <label
-          htmlFor="product-category"
+          htmlFor={`edit-category-${product.id}`}
           className="mb-2 block text-sm font-medium"
         >
-          التصنيف (اختياري)
+          التصنيف
         </label>
-
         <select
-          id="product-category"
+          id={`edit-category-${product.id}`}
           name="categoryId"
-          defaultValue=""
+          defaultValue={product.category_id ?? ""}
           className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
         >
           <option value="">بدون تصنيف</option>
-
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>
           ))}
         </select>
-
-        {categories.length === 0 && (
-          <p className="mt-2 text-xs text-slate-500">
-            لم تنشئ تصنيفات بعد. يمكنك إضافة المنتج دون تصنيف.
-          </p>
-        )}
       </div>
 
       <div>
         <label
-          htmlFor="product-description"
+          htmlFor={`edit-description-${product.id}`}
           className="mb-2 block text-sm font-medium"
         >
-          وصف المنتج (اختياري)
+          وصف المنتج
         </label>
-
         <textarea
-          id="product-description"
+          id={`edit-description-${product.id}`}
           name="description"
           rows={4}
           maxLength={2000}
-          placeholder="اكتب وصفًا مختصرًا للمنتج..."
-          className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+          defaultValue={product.description ?? ""}
+          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-slate-900"
         />
       </div>
 
       <div className="space-y-3">
         <label
-          htmlFor="product-image"
+          htmlFor={`edit-image-${product.id}`}
           className="block text-sm font-medium"
         >
-          صورة المنتج (اختياري)
+          تغيير صورة المنتج (اختياري)
         </label>
 
+        {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={preview}
+            alt="معاينة الصورة الجديدة"
+            className="h-32 w-32 rounded-xl border border-slate-200 object-cover"
+          />
+        ) : product.image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.image_url}
+            alt={`صورة ${product.name}`}
+            className="h-32 w-32 rounded-xl border border-slate-200 object-cover"
+          />
+        ) : (
+          <p className="text-sm text-slate-500">لا توجد صورة حالية.</p>
+        )}
+
         <input
-          id="product-image"
+          id={`edit-image-${product.id}`}
           type="file"
           accept="image/jpeg,image/png,image/webp"
           onChange={handleFileChange}
           disabled={isPending}
-          className="block w-full text-sm file:me-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2"
+          className="block w-full text-sm file:me-3 file:rounded-lg file:border-0 file:bg-white file:px-4 file:py-2"
         />
-
-        {preview && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={preview}
-            alt="معاينة صورة المنتج"
-            className="h-40 w-40 rounded-xl border border-slate-200 object-cover"
-          />
-        )}
 
         {file && (
           <button
             type="button"
             onClick={handleUpload}
             disabled={isPending || !!imagePath}
-            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-50"
           >
             {imagePath
               ? "تم رفع الصورة"
               : isPending
-                ? "جارٍ تنفيذ العملية..."
-                : "رفع الصورة"}
+                ? "جارٍ التنفيذ..."
+                : "رفع الصورة الجديدة"}
           </button>
-        )}
-
-        {file && (
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={() => {
-              if (preview) {
-                URL.revokeObjectURL(preview);
-              }
-
-              setFile(null);
-              setPreview("");
-              setImagePath("");
-              setMessage("");
-
-              const input = document.getElementById(
-                "product-image"
-              ) as HTMLInputElement | null;
-
-              if (input) input.value = "";
-            }}
-            className="ms-2 text-sm text-red-700 hover:underline disabled:opacity-50"
-          >
-            إزالة الصورة
-          </button>
-        )}
-
-        {message && (
-          <p role="status" className="text-sm text-slate-600">
-            {message}
-          </p>
         )}
       </div>
 
       <input type="hidden" name="imagePath" value={imagePath} />
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      {message && (
+        <p role="status" className="text-sm text-slate-700">
+          {message}
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-2">
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
         >
-          {isPending ? "جارٍ الحفظ..." : "حفظ المنتج"}
+          {isPending ? "جارٍ الحفظ..." : "حفظ التعديلات"}
         </button>
 
-        <a
-          href="/dashboard"
-          className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium hover:bg-slate-50"
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isPending}
+          className="rounded-xl border border-slate-300 px-5 py-3 text-sm hover:bg-white"
         >
           إلغاء
-        </a>
+        </button>
       </div>
     </form>
   );
