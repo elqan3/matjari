@@ -18,7 +18,7 @@ redirect(`/dashboard/products?error=${message}`);
 
 function isValidPrice(value: string): boolean {
 return (
-/^\d+(?:.\d{1,2})?$/.test(value) &&
+/^\d+(?:\.\d{1,2})?$/.test(value) &&
 Number.isFinite(Number(value))
 );
 }
@@ -91,7 +91,7 @@ const fileName = imagePath.startsWith(prefix)
 ? imagePath.slice(prefix.length)
 : "";
 
-if (!/^product-\d+.(jpg|png|webp)$/.test(fileName)) {
+if (!/^product-\d+\.(jpg|png|webp)$/.test(fileName)) {
 fail("invalid_image");
 }
 }
