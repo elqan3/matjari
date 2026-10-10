@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  AddToCartButton,
+  StorefrontCartProvider,
+} from "./StorefrontCart";
 
 export const instant = false;
 
@@ -145,7 +149,11 @@ export default async function StorePage({ params }: StorePageProps) {
 
   const hasProducts = products.length > 0;
 
-  return (
+ return (
+  <StorefrontCartProvider
+    storeSlug={store.slug}
+    products={products}
+  >
     <main
       dir="rtl"
       className="min-h-screen bg-[#f7f7f5] text-slate-900"
@@ -329,8 +337,10 @@ export default async function StorePage({ params }: StorePageProps) {
           </p>
         </footer>
       </div>
-    </main>
-  );
+       </main>
+  </StorefrontCartProvider>
+);
+ 
 }
 
 function ProductCard({ product }: { product: Product }) {
@@ -394,6 +404,10 @@ function ProductCard({ product }: { product: Product }) {
             </span>
           )}
         </div>
+        <AddToCartButton
+  productId={product.id}
+  productName={product.name}
+/>
       </div>
     </article>
   );
