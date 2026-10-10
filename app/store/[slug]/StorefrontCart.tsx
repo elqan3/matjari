@@ -98,6 +98,9 @@ export function StorefrontCartProvider({
   const cartStorageKey = `matjari-cart:${storeSlug}`;
   const detailsStorageKey = `matjari-customer:${storeSlug}`;
 
+  // These effects hydrate client-only state from localStorage after mount.
+  // The state updates are intentional; preserve SSR initialization and persistence order.
+  /* eslint-disable react-hooks/set-state-in-effect */
   // Restore the cart and keep only products that are currently available.
   useEffect(() => {
     try {
@@ -186,6 +189,8 @@ export function StorefrontCartProvider({
       setDetailsHydrated(true);
     }
   }, [detailsStorageKey]);
+
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const availableProducts = useMemo(
     () => products.filter((product) => product.is_available),
