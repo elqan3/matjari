@@ -39,7 +39,7 @@ async function StoreSettingsContent({
 
   const { data: store, error } = await supabase
   .from("stores")
-  .select("id, name, slug, description, logo_url")
+  .select("id, name, slug, description, logo_url, theme_preset")
   .eq("owner_id", userId)
   .maybeSingle();
 
@@ -174,6 +174,53 @@ async function StoreSettingsContent({
                 اختياري، حتى 500 حرف.
               </p>
             </div>
+
+
+            <fieldset className="space-y-3">
+              <legend className="text-sm font-semibold">تصميم واجهة الزبائن</legend>
+              <p className="text-sm leading-6 text-[#718077]">
+                اختر الشكل الذي يناسب هوية متجرك. يمكنك تغيير التصميم لاحقًا دون التأثير في المنتجات أو الطلبات.
+              </p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {[
+                  { id: "simple", name: "البسيط", note: "هادئ وواضح — مجاني", colors: ["#f8fafc", "#ffffff", "#334155"], premium: false },
+                  { id: "terracotta", name: "الطين الدافئ", note: "هوية دافئة للمتاجر المستقلة", colors: ["#fbf5ef", "#fffaf5", "#a64e32"], premium: true },
+                  { id: "botanical", name: "البوتانيكي", note: "طبيعي وأنيق بلمسات خضراء", colors: ["#f2f7f0", "#fcfff9", "#326747"], premium: true },
+                  { id: "midnight", name: "منتصف الليل", note: "داكن وفاخر مع لمسات ذهبية", colors: ["#111827", "#1f2937", "#d6ad62"], premium: true },
+                  { id: "blush", name: "بلَش", note: "ناعم وعصري للجمال والهدايا", colors: ["#fff5f7", "#fffdfd", "#be5676"], premium: true },
+                ].map((theme) => (
+                  <label
+                    key={theme.id}
+                    className={`flex cursor-pointer gap-3 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-sm ${store.theme_preset === theme.id ? "border-[#173f32] bg-[#f3f7f2] ring-1 ring-[#173f32]" : "border-[#e5e9e1] bg-white"}`}
+                  >
+                    <input
+                      type="radio"
+                      name="theme_preset"
+                      value={theme.id}
+                      defaultChecked={store.theme_preset === theme.id}
+                      className="mt-1 accent-[#173f32]"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2 font-semibold">
+                        {theme.name}
+                        {theme.premium && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">مميز</span>
+                        )}
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-[#718077]">{theme.note}</span>
+                      <span className="mt-3 flex gap-1.5" aria-hidden="true">
+                        {theme.colors.map((color) => (
+                          <span key={color} className="h-5 w-8 rounded-md border border-black/5" style={{ backgroundColor: color }} />
+                        ))}
+                      </span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <p className="text-xs leading-5 text-[#8a7560]">
+                التصاميم المميزة جاهزة للتجربة الآن. ربطها بخطة مدفوعة سيتم عند تجهيز الاشتراكات والدفع، حتى لا نعرض دفعًا غير متاح حاليًا.
+              </p>
+            </fieldset>
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
