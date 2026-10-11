@@ -1,9 +1,9 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import StoreCreateForm from "./store-create-form";
 
 async function DashboardContent() {
   await connection();
@@ -54,33 +54,34 @@ async function DashboardContent() {
             <p className="mt-2 text-sm text-slate-500">
               رابط المتجر: /store/{store.slug}
             </p>
-           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-  <Link
-    href="/dashboard/settings"
-    className="rounded-xl bg-slate-900 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-slate-700"
-  >
-    إعدادات المتجر
-  </Link>
-  <Link
-  href="/dashboard/categories"
-  className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
->
-  إدارة التصنيفات
-</Link>
-  <Link
-  href="/dashboard/products"
-  className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
->
-  إدارة المنتجات
-</Link>
-</div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/dashboard/settings"
+                className="rounded-xl bg-slate-900 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-slate-700"
+              >
+                إعدادات المتجر
+              </Link>
+              <Link
+                href="/dashboard/categories"
+                className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
+              >
+                إدارة التصنيفات
+              </Link>
+              <Link
+                href="/dashboard/products"
+                className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
+              >
+                إدارة المنتجات
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold">لننشئ متجرك الأول</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              حسابك جاهز، لكن لم تنشئ متجرًا بعد. سنضيف نموذج إنشاء المتجر في المرحلة التالية.
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              أدخل اسم متجرك واختر رابطًا فريدًا له. بعد إنشائه ستتمكن من إضافة التصنيفات والمنتجات وإدارة المتجر.
             </p>
+            <StoreCreateForm />
           </div>
         )}
       </section>
