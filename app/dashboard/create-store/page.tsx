@@ -38,22 +38,22 @@ async function CreateStoreContent() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900"
+      className="min-h-screen bg-[#f7f8f5] px-4 py-10 text-[#172a25]"
     >
       <div className="mx-auto max-w-xl">
         <Link
           href="/dashboard"
-          className="text-sm text-slate-600 hover:text-slate-900"
+          className="text-sm text-[#718077] hover:text-[#172a25]"
         >
           العودة إلى لوحة التحكم
         </Link>
 
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="mt-6 rounded-2xl border border-[#e5e9e1] bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-2xl font-bold">
             أنشئ متجرك الأول
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-[#718077]">
             أدخل بيانات متجرك للبدء في عرض منتجاتك واستقبال الطلبات.
           </p>
 
@@ -73,7 +73,7 @@ async function CreateStoreContent() {
                 minLength={1}
                 maxLength={100}
                 placeholder="مثال: متجري"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                className="w-full rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
               />
             </div>
 
@@ -85,7 +85,7 @@ async function CreateStoreContent() {
                 رابط المتجر
               </label>
               <div dir="ltr" className="flex items-center gap-2">
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-[#78857d]">
                   /store/
                 </span>
                 <input
@@ -98,10 +98,10 @@ async function CreateStoreContent() {
                   pattern="[a-z0-9]+(-[a-z0-9]+)*"
                   title="استخدم الحروف الإنجليزية الصغيرة والأرقام والشرطة فقط"
                   placeholder="my-store"
-                  className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                  className="min-w-0 flex-1 rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
                 />
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-[#78857d]">
                 استخدم الحروف الإنجليزية الصغيرة والأرقام والشرطة فقط.
               </p>
             </div>
@@ -119,13 +119,13 @@ async function CreateStoreContent() {
                 rows={4}
                 maxLength={500}
                 placeholder="اكتب نبذة قصيرة عن متجرك..."
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                className="w-full rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-slate-900 px-4 py-3 font-medium text-white transition hover:bg-slate-700"
+              className="w-full rounded-xl bg-[#173f32] px-4 py-3 font-medium text-white transition hover:bg-[#205744]"
             >
               إنشاء المتجر
             </button>
@@ -142,7 +142,7 @@ export default function CreateStorePage() {
       fallback={
         <main
           dir="rtl"
-          className="min-h-screen bg-slate-50 p-8 text-slate-600"
+          className="min-h-screen bg-[#f7f8f5] p-8 text-[#718077]"
         >
           جارٍ التحقق من حسابك...
         </main>
