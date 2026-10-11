@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f8f5;
+  --foreground: #172a25;
+  --brand: #173f32;
+  --brand-strong: #205744;
+  --brand-accent: #29936b;
+  --surface: #ffffff;
+  --surface-muted: #eaf3ed;
+  --border: #e5e9e1;
+  --text-muted: #718077;
 }
 
 @theme inline {
@@ -12,15 +19,28 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--background);
 }
 
 body {
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: #c9f0de;
+  color: #103d2d;
+}
+
+:where(input, textarea, select, button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(input, textarea, select):focus-visible,
+:where(button, a):focus-visible {
+  outline: 2px solid #29936b;
+  outline-offset: 3px;
 }
