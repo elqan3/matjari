@@ -253,7 +253,7 @@ export default async function StorePage({ params }: StorePageProps) {
               {productsWithoutCategory.length > 0 && (
                 <a
                   href="#category-other"
-                  className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium transition hover:border-slate-900 hover:bg-slate-900 hover:text-white"
+                  className="shrink-0 rounded-full border border-[#e9ddd3] bg-white px-4 py-2.5 text-sm font-medium transition hover:border-[#9b523b] hover:bg-[#9b523b] hover:text-white"
                 >
                   أخرى
                 </a>
@@ -333,7 +333,7 @@ export default async function StorePage({ params }: StorePageProps) {
                       <h3 className="text-lg font-bold sm:text-xl">
                         أخرى
                       </h3>
-                      <div className="h-px flex-1 bg-slate-200" />
+                      <div className="h-px flex-1 bg-[#e9ddd3]" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
@@ -350,10 +350,10 @@ export default async function StorePage({ params }: StorePageProps) {
             )}
           </div>
 
-          <footer className="mt-16 border-t border-slate-200 py-6 text-center">
-            <p className="text-xs text-slate-500">
+          <footer className="mt-16 border-t border-[#e9ddd3] py-6 text-center">
+            <p className="text-xs text-[#8a7c72]">
               متجر إلكتروني مدعوم بواسطة{" "}
-              <span className="font-semibold text-slate-700">
+              <span className="font-semibold text-[#5f5148]">
                 متجري
               </span>
             </p>
@@ -371,8 +371,8 @@ function ProductCard({ product }: { product: Product }) {
   );
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-900/5 sm:rounded-3xl">
-      <div className="relative aspect-square overflow-hidden bg-slate-100">
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#e9ddd3]/80 bg-white transition duration-200 hover:-translate-y-0.5 hover:border-[#d9c5b7] hover:shadow-lg hover:shadow-slate-900/5 sm:rounded-3xl">
+      <div className="relative aspect-square overflow-hidden bg-[#f6ebe3]">
         {product.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -382,7 +382,7 @@ function ProductCard({ product }: { product: Product }) {
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate-300">
+          <div className="flex h-full w-full items-center justify-center text-[#b9a79b]">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -411,21 +411,21 @@ function ProductCard({ product }: { product: Product }) {
         </h4>
 
         {product.description?.trim() && (
-          <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500 sm:text-sm">
+          <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#8a7c72] sm:text-sm">
             {product.description}
           </p>
         )}
 
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-4">
-          <span className="text-base font-bold text-slate-900 sm:text-lg">
+          <span className="text-base font-bold text-[#292522] sm:text-lg">
             {formatPrice(product.price)}{" "}
-            <span className="text-xs font-medium text-slate-600">
+            <span className="text-xs font-medium text-[#75685f]">
               د.ل
             </span>
           </span>
 
           {discount !== null && (
-            <span className="text-xs text-slate-400 line-through">
+            <span className="text-xs text-[#a18f82] line-through">
               {formatPrice(product.compare_at_price!)} د.ل
             </span>
           )}
