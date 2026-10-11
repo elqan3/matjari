@@ -74,22 +74,22 @@ async function CategoriesContent({ searchParams }: PageProps) {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:py-10"
+      className="min-h-screen bg-[#f7f8f5] px-4 py-8 text-[#172a25] sm:py-10"
     >
       <div className="mx-auto max-w-3xl">
         <Link
           href="/dashboard"
-          className="text-sm text-slate-600 hover:text-slate-900"
+          className="text-sm text-[#718077] hover:text-[#172a25]"
         >
           العودة إلى لوحة التحكم
         </Link>
 
         <header className="mt-6">
-          <p className="text-sm text-slate-500">إدارة المتجر</p>
+          <p className="text-sm text-[#78857d]">إدارة المتجر</p>
           <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
             التصنيفات
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-[#718077]">
             نظّم منتجاتك في تصنيفات ليسهل على عملائك العثور عليها.
           </p>
         </header>
@@ -106,13 +106,13 @@ async function CategoriesContent({ searchParams }: PageProps) {
         {params.success && (
           <p
             role="status"
-            className="mt-5 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800"
+            className="mt-5 rounded-xl border border-[#c8e1cf] bg-[#eaf3ed] p-3 text-sm text-[#215c3d]"
           >
             {successMessages[params.success] ?? "تمت العملية بنجاح."}
           </p>
         )}
 
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <section className="mt-6 rounded-2xl border border-[#e5e9e1] bg-white p-5 shadow-sm sm:p-6">
           <h2 className="text-lg font-semibold">إضافة تصنيف</h2>
 
           <form action={createCategory} className="mt-4">
@@ -131,18 +131,18 @@ async function CategoriesContent({ searchParams }: PageProps) {
                 minLength={1}
                 maxLength={80}
                 placeholder="مثال: ملابس، إلكترونيات..."
-                className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                className="min-w-0 flex-1 rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
               />
 
               <button
                 type="submit"
-                className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700"
+                className="rounded-xl bg-[#173f32] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#205744]"
               >
                 إضافة التصنيف
               </button>
             </div>
 
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-[#78857d]">
               من حرف واحد إلى 80 حرفًا. يجب أن يكون الاسم فريدًا داخل متجرك.
             </p>
           </form>
@@ -151,15 +151,15 @@ async function CategoriesContent({ searchParams }: PageProps) {
         <section className="mt-6">
           <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="text-lg font-semibold">تصنيفات متجرك</h2>
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-[#78857d]">
               {categories.length} تصنيف
             </span>
           </div>
 
           {categories.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center">
+            <div className="rounded-2xl border border-dashed border-[#d7e0d6] bg-white px-5 py-12 text-center">
               <h3 className="font-semibold">لا توجد تصنيفات بعد</h3>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-[#78857d]">
                 أضف أول تصنيف لتنظيم منتجات متجرك لاحقًا.
               </p>
             </div>
@@ -168,7 +168,7 @@ async function CategoriesContent({ searchParams }: PageProps) {
               {categories.map((category) => (
                 <article
                   key={category.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"
+                  className="rounded-2xl border border-[#e5e9e1] bg-white p-4 sm:p-5"
                 >
                   <form
                     action={updateCategory}
@@ -195,19 +195,19 @@ async function CategoriesContent({ searchParams }: PageProps) {
                         minLength={1}
                         maxLength={80}
                         defaultValue={category.name}
-                        className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                        className="w-full rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium transition hover:bg-slate-50"
+                      className="rounded-xl border border-[#d7e0d6] px-4 py-3 text-sm font-medium transition hover:bg-[#f7f8f5]"
                     >
                       حفظ الاسم
                     </button>
                   </form>
 
-                  <div className="mt-3 flex justify-start border-t border-slate-100 pt-3">
+                  <div className="mt-3 flex justify-start border-t border-[#edf0e9] pt-3">
                     <form action={deleteCategory}>
                       <input
                         type="hidden"
@@ -237,7 +237,7 @@ export default function CategoriesPage(props: PageProps) {
   return (
     <Suspense
       fallback={
-        <main dir="rtl" className="min-h-screen bg-slate-50 p-8 text-slate-600">
+        <main dir="rtl" className="min-h-screen bg-[#f7f8f5] p-8 text-[#718077]">
           جارٍ تحميل التصنيفات...
         </main>
       }
