@@ -73,6 +73,12 @@ async function DashboardContent() {
 >
   إدارة المنتجات
 </Link>
+<Link
+  href="/dashboard/orders"
+  className="rounded-xl border border-slate-300 px-5 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
+>
+  إدارة الطلبات
+</Link>
 </div>
           </div>
         ) : (
