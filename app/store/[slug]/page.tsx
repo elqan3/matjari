@@ -1,5 +1,6 @@
 
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -16,6 +17,7 @@ type Store = {
   slug: string;
   description: string | null;
   logo_url: string | null;
+  theme_preset: string | null;
 };
 
 type Category = {
@@ -36,6 +38,34 @@ type Product = {
 
 type StorePageProps = {
   params: Promise<{ slug: string }>;
+};
+
+const storefrontThemes: Record<string, { style: CSSProperties }> = {
+  simple: { style: {
+    "--theme-page": "#f8fafc", "--theme-surface": "#ffffff", "--theme-text": "#263238",
+    "--theme-muted": "#64748b", "--theme-border": "#e2e8f0", "--theme-accent": "#334155",
+    "--theme-accent-soft": "#f1f5f9", "--theme-accent-contrast": "#1e293b", "--theme-soft": "#f1f5f9",
+  } as CSSProperties },
+  terracotta: { style: {
+    "--theme-page": "#fbf8f4", "--theme-surface": "#fffdfb", "--theme-text": "#292522",
+    "--theme-muted": "#75685f", "--theme-border": "#e9ddd3", "--theme-accent": "#9b523b",
+    "--theme-accent-soft": "#fff8f2", "--theme-accent-contrast": "#763d2c", "--theme-soft": "#f6ebe3",
+  } as CSSProperties },
+  botanical: { style: {
+    "--theme-page": "#f2f7f0", "--theme-surface": "#fcfff9", "--theme-text": "#20352a",
+    "--theme-muted": "#617666", "--theme-border": "#dce8dc", "--theme-accent": "#326747",
+    "--theme-accent-soft": "#eaf4e9", "--theme-accent-contrast": "#244d35", "--theme-soft": "#e6f0e3",
+  } as CSSProperties },
+  midnight: { style: {
+    "--theme-page": "#111827", "--theme-surface": "#1f2937", "--theme-text": "#f8fafc",
+    "--theme-muted": "#cbd5e1", "--theme-border": "#374151", "--theme-accent": "#d6ad62",
+    "--theme-accent-soft": "#f6e8c8", "--theme-accent-contrast": "#5a4218", "--theme-soft": "#273449",
+  } as CSSProperties },
+  blush: { style: {
+    "--theme-page": "#fff5f7", "--theme-surface": "#fffdfd", "--theme-text": "#432b35",
+    "--theme-muted": "#896b78", "--theme-border": "#f0dce4", "--theme-accent": "#be5676",
+    "--theme-accent-soft": "#ffedf2", "--theme-accent-contrast": "#873750", "--theme-soft": "#fbe6ed",
+  } as CSSProperties },
 };
 
 function formatPrice(value: number | string) {
@@ -69,7 +99,7 @@ async function getStore(slug: string): Promise<Store | null> {
 
   const { data, error } = await supabase
     .from("stores")
-    .select("id, name, slug, description, logo_url")
+    .select("id, name, slug, description, logo_url, theme_preset")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -150,6 +180,7 @@ export default async function StorePage({ params }: StorePageProps) {
     products.filter((product) => product.category_id === categoryId);
 
   const hasProducts = products.length > 0;
+  const theme = storefrontThemes[store.theme_preset ?? "simple"] ?? storefrontThemes.simple;
 
   return (
     <StorefrontCartProvider
@@ -165,21 +196,22 @@ export default async function StorePage({ params }: StorePageProps) {
     >
       <main
         dir="rtl"
-        className="min-h-screen bg-[#fbf8f4] text-[#292522]"
+        style={theme.style}
+        className="min-h-screen bg-[var(--theme-page)] text-[var(--theme-text)]"
       >
-        <header className="border-b border-[#eee4dc] bg-[#fffdfb]">
+        <header className="border-b border-[var(--theme-border)] bg-[var(--theme-surface)]">
           <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-7">
             {store.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={store.logo_url}
                 alt={`شعار ${store.name}`}
-                className="h-16 w-16 shrink-0 rounded-2xl border border-[#eee4dc] bg-white object-contain p-1.5 shadow-sm sm:h-20 sm:w-20"
+                className="h-16 w-16 shrink-0 rounded-2xl border border-[var(--theme-border)] bg-white object-contain p-1.5 shadow-sm sm:h-20 sm:w-20"
               />
             ) : (
               <div
                 aria-hidden="true"
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#9b523b] text-2xl font-bold text-white sm:h-20 sm:w-20"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--theme-accent)] text-2xl font-bold text-white sm:h-20 sm:w-20"
               >
                 {store.name.trim().charAt(0) || "م"}
               </div>
@@ -191,11 +223,11 @@ export default async function StorePage({ params }: StorePageProps) {
               </h1>
 
               {store.description?.trim() ? (
-                <p className="mt-2 max-w-2xl whitespace-pre-line text-sm leading-6 text-[#75685f] sm:text-base sm:leading-7">
+                <p className="mt-2 max-w-2xl whitespace-pre-line text-sm leading-6 text-[var(--theme-muted)] sm:text-base sm:leading-7">
                   {store.description}
                 </p>
               ) : (
-                <p className="mt-2 text-sm text-[#8a7c72]">
+                <p className="mt-2 text-sm text-[var(--theme-muted)]">
                   أهلًا بك في متجرنا
                 </p>
               )}
@@ -204,7 +236,7 @@ export default async function StorePage({ params }: StorePageProps) {
         </header>
 
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-          <section className="mb-8 overflow-hidden rounded-3xl bg-[#9b523b] px-5 py-7 text-white shadow-[0_18px_45px_rgba(115,60,40,0.12)] sm:px-8 sm:py-9">
+          <section className="mb-8 overflow-hidden rounded-3xl bg-[var(--theme-accent)] px-5 py-7 text-white shadow-[0_18px_45px_rgba(115,60,40,0.12)] sm:px-8 sm:py-9">
             <p className="text-sm font-semibold text-white/80">
               اكتشف منتجاتنا
             </p>
@@ -220,7 +252,7 @@ export default async function StorePage({ params }: StorePageProps) {
             {hasProducts && categories.length > 0 && (
               <a
                 href="#products"
-                className="mt-5 inline-flex rounded-xl bg-[#fff8f2] px-5 py-3 text-sm font-bold text-[#763d2c] transition hover:bg-white"
+                className="mt-5 inline-flex rounded-xl bg-[var(--theme-accent-soft)] px-5 py-3 text-sm font-bold text-[var(--theme-accent-contrast)] transition hover:bg-white"
               >
                 تصفح المنتجات
               </a>
@@ -243,7 +275,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   <a
                     key={category.id}
                     href={`#category-${category.id}`}
-                    className="shrink-0 rounded-full border border-[#e9ddd3] bg-white px-4 py-2.5 text-sm font-semibold text-[#5f5148] transition hover:border-[#9b523b] hover:bg-[#9b523b] hover:text-white"
+                    className="shrink-0 rounded-full border border-[var(--theme-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--theme-text)] transition hover:border-[#9b523b] hover:bg-[var(--theme-accent)] hover:text-white"
                   >
                     {category.name}
                   </a>
@@ -253,7 +285,7 @@ export default async function StorePage({ params }: StorePageProps) {
               {productsWithoutCategory.length > 0 && (
                 <a
                   href="#category-other"
-                  className="shrink-0 rounded-full border border-[#e9ddd3] bg-white px-4 py-2.5 text-sm font-medium transition hover:border-[#9b523b] hover:bg-[#9b523b] hover:text-white"
+                  className="shrink-0 rounded-full border border-[var(--theme-border)] bg-white px-4 py-2.5 text-sm font-medium transition hover:border-[#9b523b] hover:bg-[var(--theme-accent)] hover:text-white"
                 >
                   أخرى
                 </a>
@@ -267,7 +299,7 @@ export default async function StorePage({ params }: StorePageProps) {
                 <h2 className="text-xl font-black sm:text-2xl">
                   منتجات المتجر
                 </h2>
-                <p className="mt-1 text-sm text-[#8a7c72]">
+                <p className="mt-1 text-sm text-[var(--theme-muted)]">
                   {products.length}{" "}
                   {products.length === 1 ? "منتج" : "منتجات"} متاحة
                 </p>
@@ -275,8 +307,8 @@ export default async function StorePage({ params }: StorePageProps) {
             </div>
 
             {!hasProducts ? (
-              <section className="rounded-3xl border border-dashed border-[#dfd2c7] bg-white px-5 py-16 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f6ebe3] text-2xl text-[#9b523b]">
+              <section className="rounded-3xl border border-dashed border-[var(--theme-border)] bg-white px-5 py-16 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--theme-soft)] text-2xl text-[#9b523b]">
                   ◇
                 </div>
 
@@ -284,7 +316,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   لا توجد منتجات متاحة حاليًا
                 </h3>
 
-                <p className="mt-2 text-sm leading-6 text-[#8a7c72]">
+                <p className="mt-2 text-sm leading-6 text-[var(--theme-muted)]">
                   لم يضف صاحب المتجر منتجات بعد، أو أن المنتجات غير متاحة
                   مؤقتًا. يرجى العودة لاحقًا.
                 </p>
@@ -307,7 +339,7 @@ export default async function StorePage({ params }: StorePageProps) {
                           {category.name}
                         </h3>
                         <div className="h-px flex-1 bg-[#e9ddd3]" />
-                        <span className="text-xs text-[#8a7c72]">
+                        <span className="text-xs text-[var(--theme-muted)]">
                           {categoryProducts.length} منتج
                         </span>
                       </div>
@@ -350,10 +382,10 @@ export default async function StorePage({ params }: StorePageProps) {
             )}
           </div>
 
-          <footer className="mt-16 border-t border-[#e9ddd3] py-6 text-center">
-            <p className="text-xs text-[#8a7c72]">
+          <footer className="mt-16 border-t border-[var(--theme-border)] py-6 text-center">
+            <p className="text-xs text-[var(--theme-muted)]">
               متجر إلكتروني مدعوم بواسطة{" "}
-              <span className="font-semibold text-[#5f5148]">
+              <span className="font-semibold text-[var(--theme-text)]">
                 متجري
               </span>
             </p>
@@ -371,8 +403,8 @@ function ProductCard({ product }: { product: Product }) {
   );
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#e9ddd3]/80 bg-white transition duration-200 hover:-translate-y-0.5 hover:border-[#d9c5b7] hover:shadow-lg hover:shadow-slate-900/5 sm:rounded-3xl">
-      <div className="relative aspect-square overflow-hidden bg-[#f6ebe3]">
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--theme-border)]/80 bg-white transition duration-200 hover:-translate-y-0.5 hover:border-[var(--theme-border)] hover:shadow-lg hover:shadow-slate-900/5 sm:rounded-3xl">
+      <div className="relative aspect-square overflow-hidden bg-[var(--theme-soft)]">
         {product.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -382,7 +414,7 @@ function ProductCard({ product }: { product: Product }) {
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[#b9a79b]">
+          <div className="flex h-full w-full items-center justify-center text-[var(--theme-muted)]">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -411,15 +443,15 @@ function ProductCard({ product }: { product: Product }) {
         </h4>
 
         {product.description?.trim() && (
-          <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#8a7c72] sm:text-sm">
+          <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--theme-muted)] sm:text-sm">
             {product.description}
           </p>
         )}
 
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 gap-y-1 pt-4">
-          <span className="text-base font-bold text-[#292522] sm:text-lg">
+          <span className="text-base font-bold text-[var(--theme-text)] sm:text-lg">
             {formatPrice(product.price)}{" "}
-            <span className="text-xs font-medium text-[#75685f]">
+            <span className="text-xs font-medium text-[var(--theme-muted)]">
               د.ل
             </span>
           </span>
