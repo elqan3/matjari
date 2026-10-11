@@ -13,6 +13,8 @@ export async function updateStoreSettings(formData: FormData) {
   const description = String(
     formData.get("description") ?? ""
   ).trim();
+  const themePreset = String(formData.get("theme_preset") ?? "simple");
+  const allowedThemes = new Set(["simple", "terracotta", "botanical", "midnight", "blush"]);
 
   if (
     name.length < 1 ||
@@ -20,7 +22,8 @@ export async function updateStoreSettings(formData: FormData) {
     slug.length < 3 ||
     slug.length > 50 ||
     !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
-    description.length > 500
+    description.length > 500 ||
+    !allowedThemes.has(themePreset)
   ) {
     redirect("/dashboard/settings?error=invalid");
   }
@@ -57,6 +60,7 @@ export async function updateStoreSettings(formData: FormData) {
       name,
       slug,
       description: description || null,
+      theme_preset: themePreset,
     })
     .eq("id", store.id)
     .eq("owner_id", userId);
