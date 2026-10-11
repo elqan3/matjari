@@ -45,7 +45,7 @@ async function DashboardContent() {
 
   const { data: store, error: storeError } = await supabase
     .from("stores")
-    .select("id, name, slug")
+    .select("id, name, slug, logo_url")
     .eq("owner_id", data.claims.sub)
     .maybeSingle();
 
@@ -102,17 +102,17 @@ async function DashboardContent() {
             {store ? (
               <>
                 <section className="overflow-hidden rounded-[28px] bg-[#173f32] text-white shadow-[0_16px_45px_rgba(23,63,50,0.12)]">
-                  <div className="grid gap-7 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10">
+                  <div className="grid gap-6 p-5 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10">
                     <div>
                       <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-[#d8eee1]"><span className="h-1.5 w-1.5 rounded-full bg-[#8be0ad]" /> متجرك جاهز للإدارة</span>
-                      <h2 className="mt-5 text-2xl font-black sm:text-3xl">{store.name}</h2>
+                      <div className="mt-5 flex min-w-0 items-center gap-3 sm:gap-4 lg:block"><div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-white/10 sm:h-16 sm:w-16 lg:hidden">{store.logo_url ? <img src={store.logo_url} alt={`شعار ${store.name}`} className="h-full w-full object-contain p-1" /> : <StoreMark small />}</div><h2 className="min-w-0 break-words text-2xl font-black sm:text-3xl lg:mt-0">{store.name}</h2></div>
                       <p className="mt-2 text-sm leading-6 text-white/70">حدّث منتجاتك، راجع الطلبات، واجعل متجرك جاهزًا لاستقبال العملاء.</p>
                       <div className="mt-6 flex flex-wrap gap-3">
                         <Link href="/dashboard/products" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#f6faf6] px-4 py-3 text-sm font-bold text-[#173f32] transition hover:bg-white">إدارة المنتجات <NavIcon kind="box" /></Link>
                         <Link href="/dashboard/orders" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/10">عرض الطلبات <NavIcon kind="orders" /></Link>
                       </div>
                     </div>
-                    <div className="hidden h-36 w-36 items-center justify-center rounded-[30px] border border-white/15 bg-white/[0.07] lg:flex"><div className="flex h-24 w-24 items-center justify-center rounded-[26px] bg-[#e5f2e8] text-[#173f32]"><StoreMark /></div></div>
+                    <div className="hidden h-36 w-36 items-center justify-center overflow-hidden rounded-[30px] border border-white/15 bg-white/[0.07] lg:flex">{store.logo_url ? <img src={store.logo_url} alt={`شعار ${store.name}`} className="h-full w-full object-contain p-3" /> : <div className="flex h-24 w-24 items-center justify-center rounded-[26px] bg-[#e5f2e8] text-[#173f32]"><StoreMark /></div>}</div>
                   </div>
                 </section>
 
