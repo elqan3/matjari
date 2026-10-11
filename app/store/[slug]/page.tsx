@@ -44,27 +44,27 @@ const storefrontThemes: Record<string, { style: CSSProperties }> = {
   simple: { style: {
     "--theme-page": "#f8fafc", "--theme-surface": "#ffffff", "--theme-text": "#263238",
     "--theme-muted": "#64748b", "--theme-border": "#e2e8f0", "--theme-accent": "#334155",
-    "--theme-accent-soft": "#f1f5f9", "--theme-accent-contrast": "#1e293b", "--theme-soft": "#f1f5f9",
+    "--theme-accent-soft": "#f1f5f9", "--theme-accent-contrast": "#1e293b", "--theme-on-accent": "#ffffff", "--theme-soft": "#f1f5f9",
   } as CSSProperties },
   terracotta: { style: {
     "--theme-page": "#fbf8f4", "--theme-surface": "#fffdfb", "--theme-text": "#292522",
     "--theme-muted": "#75685f", "--theme-border": "#e9ddd3", "--theme-accent": "#9b523b",
-    "--theme-accent-soft": "#fff8f2", "--theme-accent-contrast": "#763d2c", "--theme-soft": "#f6ebe3",
+    "--theme-accent-soft": "#fff8f2", "--theme-accent-contrast": "#763d2c", "--theme-on-accent": "#ffffff", "--theme-soft": "#f6ebe3",
   } as CSSProperties },
   botanical: { style: {
     "--theme-page": "#f2f7f0", "--theme-surface": "#fcfff9", "--theme-text": "#20352a",
     "--theme-muted": "#617666", "--theme-border": "#dce8dc", "--theme-accent": "#326747",
-    "--theme-accent-soft": "#eaf4e9", "--theme-accent-contrast": "#244d35", "--theme-soft": "#e6f0e3",
+    "--theme-accent-soft": "#eaf4e9", "--theme-accent-contrast": "#244d35", "--theme-on-accent": "#ffffff", "--theme-soft": "#e6f0e3",
   } as CSSProperties },
   midnight: { style: {
     "--theme-page": "#111827", "--theme-surface": "#1f2937", "--theme-text": "#f8fafc",
     "--theme-muted": "#cbd5e1", "--theme-border": "#374151", "--theme-accent": "#d6ad62",
-    "--theme-accent-soft": "#f6e8c8", "--theme-accent-contrast": "#5a4218", "--theme-soft": "#273449",
+    "--theme-accent-soft": "#f6e8c8", "--theme-accent-contrast": "#5a4218", "--theme-on-accent": "#211a0e", "--theme-soft": "#273449",
   } as CSSProperties },
   blush: { style: {
     "--theme-page": "#fff5f7", "--theme-surface": "#fffdfd", "--theme-text": "#432b35",
     "--theme-muted": "#896b78", "--theme-border": "#f0dce4", "--theme-accent": "#be5676",
-    "--theme-accent-soft": "#ffedf2", "--theme-accent-contrast": "#873750", "--theme-soft": "#fbe6ed",
+    "--theme-accent-soft": "#ffedf2", "--theme-accent-contrast": "#873750", "--theme-on-accent": "#ffffff", "--theme-soft": "#fbe6ed",
   } as CSSProperties },
 };
 
@@ -206,12 +206,12 @@ export default async function StorePage({ params }: StorePageProps) {
               <img
                 src={store.logo_url}
                 alt={`شعار ${store.name}`}
-                className="h-16 w-16 shrink-0 rounded-2xl border border-[var(--theme-border)] bg-white object-contain p-1.5 shadow-sm sm:h-20 sm:w-20"
+                className="h-16 w-16 shrink-0 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface)] object-contain p-1.5 shadow-sm sm:h-20 sm:w-20"
               />
             ) : (
               <div
                 aria-hidden="true"
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--theme-accent)] text-2xl font-bold text-white sm:h-20 sm:w-20"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[var(--theme-accent)] text-2xl font-bold text-[var(--theme-on-accent)] sm:h-20 sm:w-20"
               >
                 {store.name.trim().charAt(0) || "م"}
               </div>
@@ -236,8 +236,8 @@ export default async function StorePage({ params }: StorePageProps) {
         </header>
 
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-          <section className="mb-8 overflow-hidden rounded-3xl bg-[var(--theme-accent)] px-5 py-7 text-white shadow-[0_18px_45px_rgba(115,60,40,0.12)] sm:px-8 sm:py-9">
-            <p className="text-sm font-semibold text-white/80">
+          <section className="mb-8 overflow-hidden rounded-3xl bg-[var(--theme-accent)] px-5 py-7 text-[var(--theme-on-accent)] shadow-[0_18px_45px_rgba(115,60,40,0.12)] sm:px-8 sm:py-9">
+            <p className="text-sm font-semibold text-[var(--theme-on-accent)]/80">
               اكتشف منتجاتنا
             </p>
 
@@ -245,14 +245,14 @@ export default async function StorePage({ params }: StorePageProps) {
               اختيارات تناسبك
             </h2>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-white/85">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--theme-on-accent)]/85">
               تصفح المنتجات المتاحة واختر ما يناسبك.
             </p>
 
             {hasProducts && categories.length > 0 && (
               <a
                 href="#products"
-                className="mt-5 inline-flex rounded-xl bg-[var(--theme-accent-soft)] px-5 py-3 text-sm font-bold text-[var(--theme-accent-contrast)] transition hover:bg-white"
+                className="mt-5 inline-flex rounded-xl bg-[var(--theme-accent-soft)] px-5 py-3 text-sm font-bold text-[var(--theme-accent-contrast)] transition hover:bg-[var(--theme-surface)]"
               >
                 تصفح المنتجات
               </a>
@@ -275,7 +275,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   <a
                     key={category.id}
                     href={`#category-${category.id}`}
-                    className="shrink-0 rounded-full border border-[var(--theme-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--theme-text)] transition hover:border-[#9b523b] hover:bg-[var(--theme-accent)] hover:text-white"
+                    className="shrink-0 rounded-full border border-[var(--theme-border)] bg-[var(--theme-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--theme-text)] transition hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)] hover:text-[var(--theme-on-accent)]"
                   >
                     {category.name}
                   </a>
@@ -285,7 +285,7 @@ export default async function StorePage({ params }: StorePageProps) {
               {productsWithoutCategory.length > 0 && (
                 <a
                   href="#category-other"
-                  className="shrink-0 rounded-full border border-[var(--theme-border)] bg-white px-4 py-2.5 text-sm font-medium transition hover:border-[#9b523b] hover:bg-[var(--theme-accent)] hover:text-white"
+                  className="shrink-0 rounded-full border border-[var(--theme-border)] bg-[var(--theme-surface)] px-4 py-2.5 text-sm font-medium transition hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)] hover:text-[var(--theme-on-accent)]"
                 >
                   أخرى
                 </a>
@@ -307,8 +307,8 @@ export default async function StorePage({ params }: StorePageProps) {
             </div>
 
             {!hasProducts ? (
-              <section className="rounded-3xl border border-dashed border-[var(--theme-border)] bg-white px-5 py-16 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--theme-soft)] text-2xl text-[#9b523b]">
+              <section className="rounded-3xl border border-dashed border-[var(--theme-border)] bg-[var(--theme-surface)] px-5 py-16 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--theme-soft)] text-2xl text-[var(--theme-accent)]">
                   ◇
                 </div>
 
@@ -338,7 +338,7 @@ export default async function StorePage({ params }: StorePageProps) {
                         <h3 className="text-lg font-bold sm:text-xl">
                           {category.name}
                         </h3>
-                        <div className="h-px flex-1 bg-[#e9ddd3]" />
+                        <div className="h-px flex-1 bg-[var(--theme-border)]" />
                         <span className="text-xs text-[var(--theme-muted)]">
                           {categoryProducts.length} منتج
                         </span>
@@ -365,7 +365,7 @@ export default async function StorePage({ params }: StorePageProps) {
                       <h3 className="text-lg font-bold sm:text-xl">
                         أخرى
                       </h3>
-                      <div className="h-px flex-1 bg-[#e9ddd3]" />
+                      <div className="h-px flex-1 bg-[var(--theme-border)]" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
@@ -403,7 +403,7 @@ function ProductCard({ product }: { product: Product }) {
   );
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--theme-border)]/80 bg-white transition duration-200 hover:-translate-y-0.5 hover:border-[var(--theme-border)] hover:shadow-lg hover:shadow-slate-900/5 sm:rounded-3xl">
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--theme-border)] hover:shadow-lg hover:shadow-slate-900/5 sm:rounded-3xl">
       <div className="relative aspect-square overflow-hidden bg-[var(--theme-soft)]">
         {product.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -431,7 +431,7 @@ function ProductCard({ product }: { product: Product }) {
         )}
 
         {discount !== null && (
-          <span className="absolute right-2 top-2 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white shadow-sm sm:right-3 sm:top-3">
+          <span className="absolute right-2 top-2 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-[var(--theme-on-accent)] shadow-sm sm:right-3 sm:top-3">
             خصم {discount}%
           </span>
         )}
@@ -457,7 +457,7 @@ function ProductCard({ product }: { product: Product }) {
           </span>
 
           {discount !== null && (
-            <span className="text-xs text-[#a18f82] line-through">
+            <span className="text-xs text-[var(--theme-muted)] line-through">
               {formatPrice(product.compare_at_price!)} د.ل
             </span>
           )}
