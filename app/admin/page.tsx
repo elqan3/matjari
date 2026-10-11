@@ -1,10 +1,10 @@
-export const instant = false;
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+
+export const instant = false;
 
 type StoreRow = {
   id: string;
