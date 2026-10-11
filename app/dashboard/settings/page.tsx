@@ -55,22 +55,22 @@ async function StoreSettingsContent({
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-slate-50 px-4 py-10 text-slate-900"
+      className="min-h-screen bg-[#f7f8f5] px-4 py-10 text-[#172a25]"
     >
       <div className="mx-auto max-w-2xl">
         <Link
           href="/dashboard"
-          className="text-sm text-slate-600 hover:text-slate-900"
+          className="text-sm text-[#718077] hover:text-[#172a25]"
         >
           العودة إلى لوحة التحكم
         </Link>
 
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="mt-6 rounded-2xl border border-[#e5e9e1] bg-white p-6 shadow-sm sm:p-8">
           <h1 className="text-2xl font-bold">
             إعدادات المتجر
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-[#718077]">
             عدّل بيانات متجرك الأساسية. ستظهر التغييرات
             في واجهة متجرك العامة عند تجهيزها.
           </p>
@@ -83,7 +83,7 @@ async function StoreSettingsContent({
           {params.saved === "1" && (
             <p
               role="status"
-              className="mt-5 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800"
+              className="mt-5 rounded-xl border border-[#c8e1cf] bg-[#eaf3ed] p-3 text-sm text-[#215c3d]"
             >
               تم حفظ إعدادات المتجر بنجاح.
             </p>
@@ -118,7 +118,7 @@ async function StoreSettingsContent({
                 minLength={1}
                 maxLength={100}
                 defaultValue={store.name}
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                className="w-full rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
               />
             </div>
 
@@ -131,7 +131,7 @@ async function StoreSettingsContent({
               </label>
 
               <div dir="ltr" className="flex items-center gap-2">
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-[#78857d]">
                   /store/
                 </span>
                 <input
@@ -144,7 +144,7 @@ async function StoreSettingsContent({
                   pattern="[a-z0-9]+(-[a-z0-9]+)*"
                   title="استخدم الحروف الإنجليزية الصغيرة والأرقام والشرطة فقط"
                   defaultValue={store.slug}
-                  className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                  className="min-w-0 flex-1 rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
                 />
               </div>
 
@@ -168,9 +168,9 @@ async function StoreSettingsContent({
                 maxLength={500}
                 defaultValue={store.description ?? ""}
                 placeholder="اكتب نبذة قصيرة عن متجرك..."
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-900"
+                className="w-full rounded-xl border border-[#d7e0d6] px-4 py-3 outline-none focus:border-[#29936b]"
               />
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-[#78857d]">
                 اختياري، حتى 500 حرف.
               </p>
             </div>
@@ -178,14 +178,14 @@ async function StoreSettingsContent({
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 type="submit"
-                className="w-full rounded-xl bg-slate-900 px-4 py-3 font-medium text-white transition hover:bg-slate-700"
+                className="w-full rounded-xl bg-[#173f32] px-4 py-3 font-medium text-white transition hover:bg-[#205744]"
               >
                 حفظ التغييرات
               </button>
 
               <Link
                 href="/dashboard"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-center text-sm font-medium transition hover:bg-slate-50"
+                className="w-full rounded-xl border border-[#d7e0d6] px-4 py-3 text-center text-sm font-medium transition hover:bg-[#f7f8f5]"
               >
                 إلغاء
               </Link>
@@ -205,7 +205,7 @@ export default function StoreSettingsPage(
       fallback={
         <main
           dir="rtl"
-          className="min-h-screen bg-slate-50 p-8 text-slate-600"
+          className="min-h-screen bg-[#f7f8f5] p-8 text-[#718077]"
         >
           جارٍ تحميل إعدادات المتجر...
         </main>
