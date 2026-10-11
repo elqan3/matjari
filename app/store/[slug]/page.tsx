@@ -165,37 +165,37 @@ export default async function StorePage({ params }: StorePageProps) {
     >
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f7f7f5] text-slate-900"
+        className="min-h-screen bg-[#fbf8f4] text-[#292522]"
       >
-        <header className="border-b border-black/5 bg-white">
-          <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-5 sm:px-6">
+        <header className="border-b border-[#eee4dc] bg-[#fffdfb]">
+          <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-7">
             {store.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={store.logo_url}
                 alt={`شعار ${store.name}`}
-                className="h-16 w-16 shrink-0 rounded-2xl border border-black/5 bg-white object-contain p-1"
+                className="h-16 w-16 shrink-0 rounded-2xl border border-[#eee4dc] bg-white object-contain p-1.5 shadow-sm sm:h-20 sm:w-20"
               />
             ) : (
               <div
                 aria-hidden="true"
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-2xl font-bold text-white"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#9b523b] text-2xl font-bold text-white sm:h-20 sm:w-20"
               >
                 {store.name.trim().charAt(0) || "م"}
               </div>
             )}
 
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className="text-2xl font-black tracking-tight sm:text-3xl">
                 {store.name}
               </h1>
 
               {store.description?.trim() ? (
-                <p className="mt-1 max-w-2xl whitespace-pre-line text-sm leading-6 text-slate-600 sm:text-base">
+                <p className="mt-2 max-w-2xl whitespace-pre-line text-sm leading-6 text-[#75685f] sm:text-base sm:leading-7">
                   {store.description}
                 </p>
               ) : (
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-[#8a7c72]">
                   أهلًا بك في متجرنا
                 </p>
               )}
@@ -204,8 +204,8 @@ export default async function StorePage({ params }: StorePageProps) {
         </header>
 
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-          <section className="mb-8 rounded-3xl bg-slate-900 px-5 py-7 text-white sm:px-8 sm:py-9">
-            <p className="text-sm font-medium text-white/65">
+          <section className="mb-8 overflow-hidden rounded-3xl bg-[#9b523b] px-5 py-7 text-white shadow-[0_18px_45px_rgba(115,60,40,0.12)] sm:px-8 sm:py-9">
+            <p className="text-sm font-semibold text-white/80">
               اكتشف منتجاتنا
             </p>
 
@@ -213,14 +213,14 @@ export default async function StorePage({ params }: StorePageProps) {
               اختيارات تناسبك
             </h2>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-white/70">
+            <p className="mt-2 max-w-xl text-sm leading-6 text-white/85">
               تصفح المنتجات المتاحة واختر ما يناسبك.
             </p>
 
             {hasProducts && categories.length > 0 && (
               <a
                 href="#products"
-                className="mt-5 inline-flex rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
+                className="mt-5 inline-flex rounded-xl bg-[#fff8f2] px-5 py-3 text-sm font-bold text-[#763d2c] transition hover:bg-white"
               >
                 تصفح المنتجات
               </a>
@@ -243,7 +243,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   <a
                     key={category.id}
                     href={`#category-${category.id}`}
-                    className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium transition hover:border-slate-900 hover:bg-slate-900 hover:text-white"
+                    className="shrink-0 rounded-full border border-[#e9ddd3] bg-white px-4 py-2.5 text-sm font-semibold text-[#5f5148] transition hover:border-[#9b523b] hover:bg-[#9b523b] hover:text-white"
                   >
                     {category.name}
                   </a>
@@ -264,10 +264,10 @@ export default async function StorePage({ params }: StorePageProps) {
           <div id="products" className="scroll-mt-6">
             <div className="mb-5 flex items-end justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold sm:text-2xl">
+                <h2 className="text-xl font-black sm:text-2xl">
                   منتجات المتجر
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-[#8a7c72]">
                   {products.length}{" "}
                   {products.length === 1 ? "منتج" : "منتجات"} متاحة
                 </p>
@@ -275,8 +275,8 @@ export default async function StorePage({ params }: StorePageProps) {
             </div>
 
             {!hasProducts ? (
-              <section className="rounded-3xl border border-dashed border-slate-300 bg-white px-5 py-16 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
+              <section className="rounded-3xl border border-dashed border-[#dfd2c7] bg-white px-5 py-16 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f6ebe3] text-2xl text-[#9b523b]">
                   ◇
                 </div>
 
@@ -284,7 +284,7 @@ export default async function StorePage({ params }: StorePageProps) {
                   لا توجد منتجات متاحة حاليًا
                 </h3>
 
-                <p className="mt-2 text-sm leading-6 text-slate-500">
+                <p className="mt-2 text-sm leading-6 text-[#8a7c72]">
                   لم يضف صاحب المتجر منتجات بعد، أو أن المنتجات غير متاحة
                   مؤقتًا. يرجى العودة لاحقًا.
                 </p>
@@ -306,8 +306,8 @@ export default async function StorePage({ params }: StorePageProps) {
                         <h3 className="text-lg font-bold sm:text-xl">
                           {category.name}
                         </h3>
-                        <div className="h-px flex-1 bg-slate-200" />
-                        <span className="text-xs text-slate-500">
+                        <div className="h-px flex-1 bg-[#e9ddd3]" />
+                        <span className="text-xs text-[#8a7c72]">
                           {categoryProducts.length} منتج
                         </span>
                       </div>
