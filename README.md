@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# متجري | Matjari
 
-## Getting Started
+متجري منصة بسيطة لإنشاء متجر إلكتروني وإدارة المنتجات والطلبات من لوحة تحكم واحدة. الواجهة عربية باتجاه RTL، ومتوافقة مع الشاشات الصغيرة والكبيرة.
 
-First, run the development server:
+**الموقع:** https://matjari-ashen.vercel.app/
+
+## الميزات الحالية
+
+- إنشاء حساب وتسجيل الدخول.
+- إنشاء متجر باسم ورابط ووصف، مع رفع شعار المتجر.
+- إدارة المنتجات وأسعارها وصورها وتوفرها.
+- تنظيم المنتجات ضمن تصنيفات.
+- واجهة عامة لكل متجر عبر `/store/[slug]`.
+- سلة مشتريات وإرسال طلبات من واجهة الزبون.
+- متابعة الطلبات وتحديث حالتها من لوحة التحكم.
+- خمسة تصاميم لواجهة المتجر: البسيط، الطين الدافئ، البوتانيكي، منتصف الليل، وبلَش.
+- واجهة عربية RTL وتصميم متجاوب.
+
+> **ملاحظة حول الدفع:** المنصة لا تتضمن حاليًا نظام اشتراكات أو تحصيل مدفوعات من أصحاب المتاجر. التصاميم المميزة متاحة للاختبار إلى أن يتم بناء نظام الاشتراكات والدفع.
+
+## التقنيات
+
+- [Next.js](https://nextjs.org/) 16 مع App Router
+- [React](https://react.dev/) 19 وTypeScript
+- [Tailwind CSS](https://tailwindcss.com/) 4
+- [Supabase](https://supabase.com/) للمصادقة وقاعدة البيانات والتخزين
+- [Vercel](https://vercel.com/) للاستضافة والمعاينات
+
+## تشغيل المشروع محليًا
+
+### المتطلبات
+
+- Node.js بإصدار متوافق مع إصدار Next.js المستخدم في المشروع.
+- npm.
+- مشروع Supabase.
+
+### 1. تثبيت الاعتماديات
+
+```bash
+npm install
+```
+
+### 2. إعداد متغيرات البيئة
+
+أنشئ ملفًا باسم `.env.local` في جذر المشروع، وأضف بيانات مشروع Supabase:
+
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+```
+
+استبدل القيم التجريبية ببيانات مشروعك من لوحة Supabase. لا تضع مفاتيح سرية أو مفاتيح الخدمة الإدارية في متغيرات `NEXT_PUBLIC_*` أو في مستودع GitHub.
+
+### 3. إعداد قاعدة البيانات
+
+راجع ملفات الترحيل في `supabase/migrations/` وطبّق الترحيلات المطلوبة على مشروع Supabase المستهدف قبل تشغيل الميزات التي تعتمد عليها. تحقّق من الترحيلات التي طُبّقت مسبقًا لتجنّب تنفيذ تغييرات غير مقصودة على قاعدة بيانات تحتوي على بيانات حقيقية.
+
+### 4. تشغيل خادم التطوير
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+افتح [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## أوامر مفيدة
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev    # تشغيل خادم التطوير
+npm run lint   # فحص ESLint
+npm run build  # إنشاء نسخة الإنتاج محليًا
+npm run start  # تشغيل نسخة الإنتاج بعد البناء
+```
 
-## Learn More
+## بنية مهمة في المشروع
 
-To learn more about Next.js, take a look at the following resources:
+- `app/page.tsx` — صفحة الهبوط.
+- `app/login/` — تسجيل الدخول.
+- `app/dashboard/` — لوحة التحكم وإدارة المتجر.
+- `app/store/[slug]/` — واجهة المتجر العامة وتجربة الزبون.
+- `lib/supabase/` — عملاء Supabase للخادم والمتصفح.
+- `supabase/migrations/` — تغييرات مخطط قاعدة البيانات وسياساتها.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## الأمان والتطوير
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- تحقّق من الصلاحيات على الخادم وفي سياسات Row Level Security (RLS)، ولا تعتمد على إخفاء عناصر الواجهة وحده.
+- تحقّق من الأسعار والبيانات الحساسة على الخادم بدل الثقة في القيم المرسلة من المتصفح.
+- اختبر إنشاء متجر وإدارة المنتجات وإرسال الطلب وتحديث حالته بعد تغييرات قاعدة البيانات أو الصلاحيات.
+- استخدم معاينات Vercel لاختبار الميزات الجديدة قبل اعتمادها على `main`.
+- لا تضع أسرار البيئة أو بيانات العملاء في السجلات أو المستودع.
 
-## Deploy on Vercel
+## الحالة
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+المشروع قيد التطوير النشط. وجود نسخة منشورة لا يعني أن التسجيل العام أو جميع الوظائف التجارية جاهزة للإطلاق للجميع.
