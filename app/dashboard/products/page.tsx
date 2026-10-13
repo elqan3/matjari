@@ -24,6 +24,8 @@ const errorMessages: Record<string, string> = {
   invalid_product: "بيانات المنتج غير صالحة.",
   not_found: "المنتج غير موجود أو لا يتبع متجرك.",
   server: "تعذرت العملية. تحقق من البيانات وحاول مجددًا.",
+  subscription_required: "انتهت تجربة متجرك أو اشتراكه. اختر خطة من صفحة الاشتراك لاستعادة استقبال المنتجات والطلبات.",
+  product_limit: "وصلت إلى الحد الأقصى لعدد المنتجات في خطتك. احذف منتجًا أو اطلب الترقية إلى خطة أعلى.",
 };
 
 async function ProductsContent({ searchParams }: PageProps) {
