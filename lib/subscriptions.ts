@@ -13,7 +13,7 @@ export const SUBSCRIPTION_PLANS = {
     productLimit: 30,
     themes: ["simple", "terracotta", "botanical", "midnight", "blush"],
     description: "للمتاجر التي بدأت بالنمو",
-    features: ["حتى 30 منتجًا", "جميع التصاميم الحالية", "أولوية في الدعم"],
+    features: ["حتى 30 منتجًا", "جميع التصاميم الحالية", "دعم أسرع خلال أوقات العمل"],
   },
   professional: {
     name: "احترافي",
@@ -21,7 +21,7 @@ export const SUBSCRIPTION_PLANS = {
     productLimit: null,
     themes: ["simple", "terracotta", "botanical", "midnight", "blush"],
     description: "للمتاجر ذات الكتالوج الكبير",
-    features: ["منتجات غير محدودة", "جميع التصاميم الحالية", "دعم ذو أولوية"],
+    features: ["منتجات غير محدودة", "جميع التصاميم الحالية", "أولوية في الدعم ومساعدة في إعداد المتجر"],
   },
 } as const;
 
