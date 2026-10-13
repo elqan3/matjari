@@ -44,7 +44,7 @@ export async function updateStoreSubscription(formData: FormData) {
   const now = new Date();
   const update: Record<string, unknown> = {
     status,
-    plan_code: status === "active" ? planCode : null,
+    plan_code: status === "active" || status === "suspended" ? planCode || null : null,
     admin_note: adminNote || null,
     updated_at: now.toISOString(),
   };
