@@ -80,6 +80,21 @@ async function ProductsContent({ searchParams }: PageProps) {
   const categoryList = categories ?? [];
   const productList = products ?? [];
 
+  const { data: subscription } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code")
+    .eq("store_id", store.id)
+    .maybeSingle();
+  const productLimit = subscription?.status === "trial"
+    ? 30
+    : subscription?.status === "active" && subscription.plan_code === "basic"
+      ? 10
+      : subscription?.status === "active" && subscription.plan_code === "pro"
+        ? 30
+        : subscription?.status === "active" && subscription.plan_code === "professional"
+          ? null
+          : 0;
+
   const categoryNames = new Map(
     categoryList.map((category) => [category.id, category.name])
   );
@@ -104,6 +119,10 @@ async function ProductsContent({ searchParams }: PageProps) {
           </h1>
           <p className="mt-2 text-sm leading-6 text-[#718077]">
             أضف منتجات متجرك، وعدّل بياناتها وأسعارها وصورها، وتحكم في توفرها.
+          </p>
+          <p className="mt-2 text-xs font-semibold text-[#65756a]">
+            المنتجات: {new Intl.NumberFormat("ar-LY").format(productList.length)}{productLimit === null ? " · بلا حد أقصى في خطتك" : ` / ${new Intl.NumberFormat("ar-LY").format(productLimit)}`}
+            {productLimit === 0 && <> · <Link href="/dashboard/subscription" className="text-[#267451] underline">راجع اشتراكك</Link></>}
           </p>
         </header>
 
