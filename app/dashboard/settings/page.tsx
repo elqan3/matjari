@@ -18,6 +18,7 @@ const errorMessages: Record<string, string> = {
   invalid: "تحقق من البيانات المدخلة ثم حاول مجددًا.",
   slug_taken: "هذا الرابط مستخدم بالفعل. اختر رابطًا آخر.",
   server: "تعذر حفظ الإعدادات. حاول مجددًا.",
+  plan_theme: "هذا التصميم غير متاح في خطتك الحالية. اختر تصميمًا آخر أو اطلب الترقية من صفحة الاشتراك.",
 };
 
 async function StoreSettingsContent({
