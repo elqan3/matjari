@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveSubscriptionStatus } from "@/lib/subscriptions";
 
 function StoreMark({ small = false }: { small?: boolean }) {
   return (
@@ -55,6 +56,27 @@ async function DashboardContent() {
     throw new Error(`تعذر تحميل بيانات المتجر (${storeError.code ?? "unknown"}).`);
   }
 
+  const { data: subscription } = store
+    ? await supabase.from("store_subscriptions")
+        .select("status, plan_code, trial_ends_at, ends_at")
+        .eq("store_id", store.id)
+        .maybeSingle()
+    : { data: null };
+  const subscriptionState = getEffectiveSubscriptionStatus(
+    subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
+  );
+  const subscriptionEnd = subscription?.status === "trial" ? subscription.trial_ends_at : subscription?.ends_at;
+  const daysRemaining = subscriptionEnd
+    ? Math.ceil((new Date(subscriptionEnd).getTime() - Date.now()) / 86400000)
+    : null;
+  const showSubscriptionWarning = Boolean(store) && (
+    subscriptionState === "expired" ||
+    subscriptionState === "suspended" ||
+    subscriptionState === "missing" ||
+    ((subscriptionState === "trial" || subscriptionState === "active") &&
+      daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 7)
+  );
+
   return (
     <main dir="rtl" className="min-h-screen bg-[#f7f8f5] text-[#172a25]">
       <div className="mx-auto flex min-h-screen max-w-[1440px]">
@@ -102,6 +124,17 @@ async function DashboardContent() {
 
             {store ? (
               <>
+                {showSubscriptionWarning && (
+                  <section role="status" className={`mb-5 rounded-2xl border p-4 sm:p-5 ${subscriptionState === "expired" || subscriptionState === "suspended" || subscriptionState === "missing" ? "border-red-200 bg-red-50 text-red-900" : "border-amber-200 bg-amber-50 text-amber-950"}`}>
+                    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                      <div>
+                        <p className="font-extrabold">{subscriptionState === "suspended" ? "تم إيقاف المتجر مؤقتًا" : subscriptionState === "expired" || subscriptionState === "missing" ? "تحتاج إلى مراجعة اشتراك متجرك" : "اقترب انتهاء مدة متجرك"}</p>
+                        <p className="mt-1 text-sm leading-6 opacity-85">{subscriptionState === "suspended" ? "تواصل مع إدارة متجري لمعرفة الخطوة التالية." : subscriptionState === "expired" || subscriptionState === "missing" ? "قد لا يتمكن العملاء من تصفح متجرك أو إرسال طلبات جديدة. افتح صفحة الاشتراك." : `ستنتهي المدة الحالية خلال ${daysRemaining} يومًا. أرسل طلب الخطة مبكرًا لتجنب توقف المتجر.`}</p>
+                      </div>
+                      <Link href="/dashboard/subscription" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#173f32] px-4 py-2.5 text-sm font-bold text-white">إدارة الاشتراك</Link>
+                    </div>
+                  </section>
+                )}
                 <section className="overflow-hidden rounded-[28px] bg-[#173f32] text-white shadow-[0_16px_45px_rgba(23,63,50,0.12)]">
                   <div className="grid gap-6 p-5 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10">
                     <div>
