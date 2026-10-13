@@ -21,8 +21,7 @@ export async function updateStoreSettings(formData: FormData) {
     slug.length < 3 ||
     slug.length > 50 ||
     !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
-    description.length > 500 ||
-    !allowedThemes.has(themePreset)
+    description.length > 500
   ) {
     redirect("/dashboard/settings?error=invalid");
   }
@@ -43,6 +42,15 @@ export async function updateStoreSettings(formData: FormData) {
     .select("id, slug")
     .eq("owner_id", userId)
     .maybeSingle();
+
+  if (readError) {
+    console.error("Failed to load store settings:", readError);
+    redirect("/dashboard/settings?error=server");
+  }
+
+  if (!store) {
+    redirect("/dashboard/create-store");
+  }
 
   const { data: subscription, error: subscriptionError } = await supabase
     .from("store_subscriptions")
@@ -68,15 +76,6 @@ export async function updateStoreSettings(formData: FormData) {
       : paidActive && ["pro", "professional"].includes(subscription.plan_code ?? "")
         ? new Set(["simple", "terracotta", "botanical", "midnight", "blush"])
         : new Set(["simple"]);
-
-  if (readError) {
-    console.error("Failed to load store settings:", readError);
-    redirect("/dashboard/settings?error=server");
-  }
-
-  if (!store) {
-    redirect("/dashboard/create-store");
-  }
 
   if (!allowedThemes.has(themePreset)) {
     redirect("/dashboard/settings?error=plan_theme");
