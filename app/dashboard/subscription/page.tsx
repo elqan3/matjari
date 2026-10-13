@@ -39,6 +39,9 @@ async function SubscriptionContent({ searchParams }: Props) {
   const effectiveStatus = getEffectiveSubscriptionStatus(subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0]);
   const pending = (requests ?? []).find((request) => request.status === "pending");
   const endDate = subscription?.status === "trial" ? subscription.trial_ends_at : subscription?.ends_at;
+  const daysRemaining = endDate ? Math.ceil((new Date(endDate).getTime() - Date.now()) / 86400000) : null;
+  const needsExpiryNotice = (effectiveStatus === "trial" || effectiveStatus === "active") &&
+    daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 7;
   const errors: Record<string, string> = {
     invalid: "الخطة المختارة غير صالحة.",
     already_active: "اشتراكك نشط بالفعل. تواصل معنا إذا كنت تريد تغيير الخطة.",
@@ -58,6 +61,8 @@ async function SubscriptionContent({ searchParams }: Props) {
 
         {params.error && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{errors[params.error] ?? "حدث خطأ غير متوقع."}</p>}
         {params.requested === "1" && <p role="status" className="mt-5 rounded-xl border border-[#c8e1cf] bg-[#eaf3ed] p-3 text-sm text-[#215c3d]">تم إرسال طلبك. سنفعّل الخطة بعد مراجعة الدفع.</p>}
+
+        {needsExpiryNotice && <p role="status" className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">تنبيه: {effectiveStatus === "trial" ? "ستنتهي التجربة المجانية" : "سينتهي الاشتراك"} {daysRemaining === 0 ? "اليوم" : `خلال ${daysRemaining} يومًا`}. أرسل طلب الخطة قبل انتهاء المدة لتجنب توقف المتجر.</p>}
 
         <section className="mt-6 rounded-2xl border border-[#e5e9e1] bg-white p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
