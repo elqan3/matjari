@@ -14,6 +14,7 @@ export async function updateStoreSettings(formData: FormData) {
     formData.get("description") ?? ""
   ).trim();
   const themePreset = String(formData.get("theme_preset") ?? "simple");
+  const allowedThemes = new Set(["simple", "terracotta", "botanical", "midnight", "blush"]);
 
   if (
     name.length < 1 ||
@@ -21,7 +22,8 @@ export async function updateStoreSettings(formData: FormData) {
     slug.length < 3 ||
     slug.length > 50 ||
     !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
-    description.length > 500
+    description.length > 500 ||
+    !allowedThemes.has(themePreset)
   ) {
     redirect("/dashboard/settings?error=invalid");
   }
@@ -50,35 +52,6 @@ export async function updateStoreSettings(formData: FormData) {
 
   if (!store) {
     redirect("/dashboard/create-store");
-  }
-
-  const { data: subscription, error: subscriptionError } = await supabase
-    .from("store_subscriptions")
-    .select("status, plan_code, trial_ends_at, ends_at")
-    .eq("store_id", store?.id ?? "")
-    .maybeSingle();
-
-  if (subscriptionError || !subscription) {
-    console.error("Failed to load subscription for theme access:", subscriptionError?.message);
-    redirect("/dashboard/settings?error=server");
-  }
-
-  const trialActive = subscription.status === "trial" &&
-    new Date(subscription.trial_ends_at).getTime() > Date.now();
-  const paidActive = subscription.status === "active" &&
-    Boolean(subscription.ends_at) &&
-    new Date(subscription.ends_at!).getTime() > Date.now();
-
-  const allowedThemes = trialActive
-    ? new Set(["simple", "terracotta", "botanical", "midnight", "blush"])
-    : paidActive && subscription.plan_code === "basic"
-      ? new Set(["simple", "terracotta"])
-      : paidActive && ["pro", "professional"].includes(subscription.plan_code ?? "")
-        ? new Set(["simple", "terracotta", "botanical", "midnight", "blush"])
-        : new Set(["simple"]);
-
-  if (!allowedThemes.has(themePreset)) {
-    redirect("/dashboard/settings?error=plan_theme");
   }
 
   const { error: updateError } = await supabase
