@@ -168,6 +168,7 @@ export default async function AdminPage() {
           <div className="mt-10">
             <p className="mb-3 px-3 text-[10px] font-extrabold tracking-widest text-[#9aa59d]">المنصة</p>
             <a href="#overview" className="flex items-center gap-3 rounded-xl bg-[#eaf4ed] px-3 py-3 text-sm font-bold text-[#1e6846]"><Icon name="grid" /> نظرة عامة</a>
+            <Link href="/admin/subscriptions" className="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[#65756a] transition hover:bg-[#f5f7f3] hover:text-[#1e6846]"><Icon name="store" /> المتاجر والاشتراكات</Link>
             <a href="#stores" className="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[#65756a] transition hover:bg-[#f5f7f3] hover:text-[#1e6846]"><Icon name="store" /> المتاجر</a>
             <a href="#orders" className="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[#65756a] transition hover:bg-[#f5f7f3] hover:text-[#1e6846]"><Icon name="orders" /> الطلبات</a>
           </div>
@@ -183,7 +184,7 @@ export default async function AdminPage() {
           <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[#e4e9e1] bg-[#ffffffed] px-4 py-4 backdrop-blur sm:px-7 lg:px-10">
             <div className="flex items-center gap-3 lg:hidden"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#173f32] text-white"><Icon name="store" /></span><span className="font-black">متجري<span className="text-[#29936b]">.</span></span></div>
             <div className="hidden lg:block"><p className="text-xs font-medium text-[#87948a]">مساحة الإدارة</p><p className="mt-1 text-sm font-extrabold">نظرة عامة على المنصة</p></div>
-            <div className="flex items-center gap-3"><span className="hidden max-w-56 truncate rounded-full border border-[#e1e8df] bg-white px-3 py-2 text-xs font-semibold text-[#5c6e61] sm:inline-flex">{user.email}</span><Link href="/dashboard" className="inline-flex items-center gap-2 rounded-xl border border-[#dfe7dc] bg-white px-3 py-2.5 text-xs font-bold text-[#45604e] transition hover:bg-[#f4f7f2]">لوحة المتجر <Icon name="external" /></Link></div>
+            <div className="flex items-center gap-3"><Link href="/admin/subscriptions" className="inline-flex items-center rounded-xl border border-[#dfe7dc] bg-white px-3 py-2.5 text-xs font-bold text-[#45604e]">الاشتراكات</Link><span className="hidden max-w-56 truncate rounded-full border border-[#e1e8df] bg-white px-3 py-2 text-xs font-semibold text-[#5c6e61] sm:inline-flex">{user.email}</span><Link href="/dashboard" className="inline-flex items-center gap-2 rounded-xl border border-[#dfe7dc] bg-white px-3 py-2.5 text-xs font-bold text-[#45604e] transition hover:bg-[#f4f7f2]">لوحة المتجر <Icon name="external" /></Link></div>
           </header>
 
           <div className="mx-auto max-w-[1380px] px-4 py-7 sm:px-7 sm:py-9 lg:px-10 lg:py-10">

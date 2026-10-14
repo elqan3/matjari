@@ -1,5 +1,7 @@
 
 import type { Metadata } from "next";
+import Link from "next/link";
+import { getEffectiveSubscriptionStatus } from "@/lib/subscriptions";
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -142,6 +144,29 @@ export default async function StorePage({ params }: StorePageProps) {
   }
 
   const supabase = await createClient();
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code, trial_ends_at, ends_at")
+    .eq("store_id", store.id)
+    .maybeSingle();
+  if (subscriptionError) {
+    console.error("Failed to load storefront subscription:", subscriptionError.message);
+    throw new Error("تعذر التحقق من حالة المتجر.");
+  }
+  const subscriptionState = getEffectiveSubscriptionStatus(
+    subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
+  );
+  if (subscriptionState === "expired" || subscriptionState === "suspended" || subscriptionState === "missing") {
+    return (
+      <main dir="rtl" className="flex min-h-screen items-center justify-center bg-[#f7f8f5] px-4 py-12 text-[#172a25]">
+        <section className="w-full max-w-lg rounded-3xl border border-[#e5e9e1] bg-white p-8 text-center shadow-sm">
+          <h1 className="text-2xl font-black">{store.name}</h1>
+          <p className="mt-3 text-sm leading-7 text-[#718077]">{subscriptionState === "suspended" ? "هذا المتجر متوقف مؤقتًا. يرجى التواصل مع إدارة متجري." : "هذا المتجر غير متاح حاليًا لانتهاء فترة التجربة أو الاشتراك. يمكن لصاحب المتجر التواصل مع إدارة متجري لإعادة تفعيله."}</p>
+          <Link href="/" className="mt-6 inline-flex rounded-xl bg-[#173f32] px-5 py-3 text-sm font-bold text-white">العودة إلى متجري</Link>
+        </section>
+      </main>
+    );
+  }
 
   const [categoriesResult, productsResult] = await Promise.all([
     supabase

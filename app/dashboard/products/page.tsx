@@ -16,6 +16,8 @@ type PageProps = {
 
 const errorMessages: Record<string, string> = {
   invalid_name: "أدخل اسم المنتج، بحد أقصى 120 حرفًا.",
+  subscription_required: "انتهت تجربة متجرك أو اشتراكه. راجع صفحة الاشتراك لاستعادة إضافة المنتجات والطلبات.",
+  product_limit: "وصلت إلى الحد الأقصى لعدد المنتجات في خطتك. اطلب الترقية إلى خطة أعلى.",
   invalid_price: "أدخل سعرًا صحيحًا غير سالب، وبحد أقصى منزلتين عشريتين.",
   invalid_discount: "يجب أن يكون السعر قبل الخصم أكبر من السعر الحالي.",
   invalid_description: "يجب ألا يتجاوز الوصف 2000 حرف.",
@@ -75,6 +77,22 @@ async function ProductsContent({ searchParams }: PageProps) {
     throw new Error("تعذر تحميل المنتجات");
   }
 
+  const { data: subscription } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code, trial_ends_at, ends_at")
+    .eq("store_id", store.id)
+    .maybeSingle();
+  const productLimit = !subscription
+    ? 0
+    : subscription.status === "trial" && new Date(subscription.trial_ends_at).getTime() > Date.now()
+      ? 30
+      : subscription.status === "active" && subscription.plan_code === "basic" && Boolean(subscription.ends_at) && new Date(subscription.ends_at!).getTime() > Date.now()
+        ? 10
+        : subscription.status === "active" && subscription.plan_code === "pro" && Boolean(subscription.ends_at) && new Date(subscription.ends_at!).getTime() > Date.now()
+          ? 30
+          : subscription.status === "active" && subscription.plan_code === "professional" && Boolean(subscription.ends_at) && new Date(subscription.ends_at!).getTime() > Date.now()
+            ? null
+            : 0;
   const categoryList = categories ?? [];
   const productList = products ?? [];
 
@@ -152,7 +170,13 @@ async function ProductsContent({ searchParams }: PageProps) {
 
         <section className="mt-6 rounded-2xl border border-[#e5e9e1] bg-white p-5 shadow-sm sm:p-6">
           <h2 className="mb-4 text-lg font-semibold">إضافة منتج جديد</h2>
-          <ProductCreateForm categories={categoryList} />
+          {productLimit === 0 || (productLimit !== null && productList.length >= productLimit) ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+              <p className="font-bold">{productLimit === 0 ? "اشتراك متجرك غير نشط." : "وصلت إلى الحد الأقصى لمنتجات خطتك."}</p>
+              <p className="mt-1">يمكنك الاحتفاظ بمنتجاتك الحالية. راجع الخطط لاستعادة الإضافة أو رفع الحد.</p>
+              <Link href="/dashboard/subscription" className="mt-3 inline-flex rounded-lg bg-[#173f32] px-4 py-2 font-bold text-white">عرض الخطط</Link>
+            </div>
+          ) : <ProductCreateForm categories={categoryList} />}
         </section>
 
         <section className="mt-8">

@@ -33,6 +33,7 @@ const navItems = [
   { href: "/dashboard/products", label: "المنتجات", kind: "box" as const },
   { href: "/dashboard/categories", label: "التصنيفات", kind: "tag" as const },
   { href: "/dashboard/settings", label: "إعدادات المتجر", kind: "settings" as const },
+  { href: "/dashboard/subscription", label: "الاشتراك", kind: "settings" as const },
 ];
 
 async function DashboardContent() {
@@ -126,6 +127,7 @@ async function DashboardContent() {
                     { href: "/dashboard/products", kind: "box" as const, title: "المنتجات", description: "أضف المنتجات وعدّل الأسعار والصور.", number: "02" },
                     { href: "/dashboard/categories", kind: "tag" as const, title: "التصنيفات", description: "رتّب المنتجات لتسهيل تصفحها.", number: "03" },
                     { href: "/dashboard/settings", kind: "settings" as const, title: "إعدادات المتجر", description: "حدّث اسم متجرك ورابطه وبياناته.", number: "04" },
+                    { href: "/dashboard/subscription", kind: "settings" as const, title: "الاشتراك والخطط", description: "تابع التجربة المجانية واطلب تفعيل خطة مدفوعة.", number: "05" },
                   ].map((item) => (
                     <Link key={item.href} href={item.href} className="group rounded-2xl border border-[#e5e9e1] bg-white p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#bfd8c7] hover:shadow-[0_12px_28px_rgba(31,70,49,0.06)] sm:p-6">
                       <div className="flex items-center justify-between"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf3ed] text-[#27694b]"><NavIcon kind={item.kind} /></span><span className="text-xs font-bold text-[#b4beb5]">{item.number}</span></div>
@@ -159,7 +161,7 @@ async function DashboardContent() {
             </footer>
           </section>
 
-          <nav aria-label="التنقل الرئيسي" className="grid grid-cols-5 border-t border-[#e5e9e1] bg-white px-1 py-2 lg:hidden">
+          <nav aria-label="التنقل الرئيسي" className="grid grid-cols-6 border-t border-[#e5e9e1] bg-white px-1 py-2 lg:hidden">
             {navItems.map((item, index) => <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-1.5 rounded-xl px-1 py-2 text-[10px] font-semibold ${index === 0 ? "text-[#21664b]" : "text-[#7d8981]"}`}><NavIcon kind={item.kind} /><span>{item.label}</span></Link>)}
           </nav>
         </div>
