@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { getEffectiveSubscriptionStatus } from "@/lib/subscriptions";
 
 function StoreMark({ small = false }: { small?: boolean }) {
   return (
@@ -34,7 +33,6 @@ const navItems = [
   { href: "/dashboard/products", label: "المنتجات", kind: "box" as const },
   { href: "/dashboard/categories", label: "التصنيفات", kind: "tag" as const },
   { href: "/dashboard/settings", label: "إعدادات المتجر", kind: "settings" as const },
-  { href: "/dashboard/subscription", label: "الاشتراك", kind: "settings" as const },
 ];
 
 async function DashboardContent() {
@@ -55,27 +53,6 @@ async function DashboardContent() {
     console.error("Failed to load store:", storeError);
     throw new Error(`تعذر تحميل بيانات المتجر (${storeError.code ?? "unknown"}).`);
   }
-
-  const { data: subscription } = store
-    ? await supabase.from("store_subscriptions")
-        .select("status, plan_code, trial_ends_at, ends_at")
-        .eq("store_id", store.id)
-        .maybeSingle()
-    : { data: null };
-  const subscriptionState = getEffectiveSubscriptionStatus(
-    subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
-  );
-  const subscriptionEnd = subscription?.status === "trial" ? subscription.trial_ends_at : subscription?.ends_at;
-  const daysRemaining = subscriptionEnd
-    ? Math.ceil((new Date(subscriptionEnd).getTime() - Date.now()) / 86400000)
-    : null;
-  const showSubscriptionWarning = Boolean(store) && (
-    subscriptionState === "expired" ||
-    subscriptionState === "suspended" ||
-    subscriptionState === "missing" ||
-    ((subscriptionState === "trial" || subscriptionState === "active") &&
-      daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= 7)
-  );
 
   return (
     <main dir="rtl" className="min-h-screen bg-[#f7f8f5] text-[#172a25]">
@@ -124,17 +101,6 @@ async function DashboardContent() {
 
             {store ? (
               <>
-                {showSubscriptionWarning && (
-                  <section role="status" className={`mb-5 rounded-2xl border p-4 sm:p-5 ${subscriptionState === "expired" || subscriptionState === "suspended" || subscriptionState === "missing" ? "border-red-200 bg-red-50 text-red-900" : "border-amber-200 bg-amber-50 text-amber-950"}`}>
-                    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                      <div>
-                        <p className="font-extrabold">{subscriptionState === "suspended" ? "تم إيقاف المتجر مؤقتًا" : subscriptionState === "expired" || subscriptionState === "missing" ? "تحتاج إلى مراجعة اشتراك متجرك" : "اقترب انتهاء مدة متجرك"}</p>
-                        <p className="mt-1 text-sm leading-6 opacity-85">{subscriptionState === "suspended" ? "تواصل مع إدارة متجري لمعرفة الخطوة التالية." : subscriptionState === "expired" || subscriptionState === "missing" ? "قد لا يتمكن العملاء من تصفح متجرك أو إرسال طلبات جديدة. افتح صفحة الاشتراك." : `ستنتهي المدة الحالية خلال ${daysRemaining} يومًا. أرسل طلب الخطة مبكرًا لتجنب توقف المتجر.`}</p>
-                      </div>
-                      <Link href="/dashboard/subscription" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#173f32] px-4 py-2.5 text-sm font-bold text-white">إدارة الاشتراك</Link>
-                    </div>
-                  </section>
-                )}
                 <section className="overflow-hidden rounded-[28px] bg-[#173f32] text-white shadow-[0_16px_45px_rgba(23,63,50,0.12)]">
                   <div className="grid gap-6 p-5 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:p-10">
                     <div>
@@ -160,7 +126,6 @@ async function DashboardContent() {
                     { href: "/dashboard/products", kind: "box" as const, title: "المنتجات", description: "أضف المنتجات وعدّل الأسعار والصور.", number: "02" },
                     { href: "/dashboard/categories", kind: "tag" as const, title: "التصنيفات", description: "رتّب المنتجات لتسهيل تصفحها.", number: "03" },
                     { href: "/dashboard/settings", kind: "settings" as const, title: "إعدادات المتجر", description: "حدّث اسم متجرك ورابطه وبياناته.", number: "04" },
-                    { href: "/dashboard/subscription", kind: "settings" as const, title: "الاشتراك والخطط", description: "تابع التجربة المجانية واطلب تفعيل خطة مدفوعة.", number: "05" },
                   ].map((item) => (
                     <Link key={item.href} href={item.href} className="group rounded-2xl border border-[#e5e9e1] bg-white p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[#bfd8c7] hover:shadow-[0_12px_28px_rgba(31,70,49,0.06)] sm:p-6">
                       <div className="flex items-center justify-between"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eaf3ed] text-[#27694b]"><NavIcon kind={item.kind} /></span><span className="text-xs font-bold text-[#b4beb5]">{item.number}</span></div>
@@ -194,7 +159,7 @@ async function DashboardContent() {
             </footer>
           </section>
 
-          <nav aria-label="التنقل الرئيسي" className="grid grid-cols-6 border-t border-[#e5e9e1] bg-white px-1 py-2 lg:hidden">
+          <nav aria-label="التنقل الرئيسي" className="grid grid-cols-5 border-t border-[#e5e9e1] bg-white px-1 py-2 lg:hidden">
             {navItems.map((item, index) => <Link key={item.href} href={item.href} className={`flex flex-col items-center gap-1.5 rounded-xl px-1 py-2 text-[10px] font-semibold ${index === 0 ? "text-[#21664b]" : "text-[#7d8981]"}`}><NavIcon kind={item.kind} /><span>{item.label}</span></Link>)}
           </nav>
         </div>
