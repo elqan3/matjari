@@ -19,9 +19,9 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusStyles: Record<string, string> = {
-  new: "bg-blue-50 text-[#27694b]",
+  new: "bg-blue-50 text-blue-700",
   processing: "bg-amber-50 text-amber-700",
-  completed: "bg-[#eaf3ed] text-emerald-700",
+  completed: "bg-emerald-50 text-emerald-700",
   cancelled: "bg-red-50 text-red-700",
 };
 
@@ -29,7 +29,7 @@ export default function OrdersPage(props: OrdersPageProps) {
   return (
     <Suspense
       fallback={
-        <main dir="rtl" className="min-h-screen bg-[#f7f8f5] px-4 py-8">
+        <main dir="rtl" className="min-h-screen bg-slate-50 px-4 py-8">
           <div className="mx-auto max-w-5xl animate-pulse">
             <div className="h-8 w-48 rounded bg-slate-200" />
             <div className="mt-6 h-40 rounded-2xl bg-white" />
@@ -104,29 +104,29 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
   };
 
   return (
-    <main dir="rtl" className="min-h-screen bg-[#f7f8f5] px-4 py-8">
+    <main dir="rtl" className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <Link
               href="/dashboard"
-              className="text-sm text-[#78857d] hover:text-[#172a25]"
+              className="text-sm text-slate-500 hover:text-slate-900"
             >
               ← لوحة التحكم
             </Link>
 
-            <h1 className="mt-3 text-2xl font-bold text-[#172a25]">
+            <h1 className="mt-3 text-2xl font-bold text-slate-900">
               إدارة الطلبات
             </h1>
 
-            <p className="mt-1 text-sm text-[#78857d]">
+            <p className="mt-1 text-sm text-slate-500">
               طلبات متجر {store.name}
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#e5e9e1] bg-white px-4 py-3">
-            <p className="text-sm text-[#78857d]">إجمالي الطلبات المعروضة</p>
-            <p className="mt-1 text-2xl font-bold text-[#172a25]">
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+            <p className="text-sm text-slate-500">إجمالي الطلبات المعروضة</p>
+            <p className="mt-1 text-2xl font-bold text-slate-900">
               {orders?.length ?? 0}
             </p>
           </div>
@@ -135,7 +135,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
         {params.success === "updated" && (
           <div
             role="status"
-            className="rounded-xl border border-[#c8e1cf] bg-[#eaf3ed] p-4 text-sm text-[#215c3d]"
+            className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"
           >
             تم تحديث حالة الطلب بنجاح.
           </div>
@@ -160,11 +160,11 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
         )}
 
         {!ordersError && (!orders || orders.length === 0) && (
-          <section className="rounded-2xl border border-[#e5e9e1] bg-white px-6 py-16 text-center">
-            <h2 className="text-lg font-semibold text-[#172a25]">
+          <section className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center">
+            <h2 className="text-lg font-semibold text-slate-900">
               لا توجد طلبات حتى الآن
             </h2>
-            <p className="mt-2 text-sm text-[#78857d]">
+            <p className="mt-2 text-sm text-slate-500">
               ستظهر هنا طلبات الزبائن عندما يرسلون طلباتهم من متجرك.
             </p>
           </section>
@@ -174,15 +174,15 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
           {orders?.map((order) => (
             <article
               key={order.id}
-              className="overflow-hidden rounded-2xl border border-[#e5e9e1] bg-white"
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
             >
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#edf0e9] p-5">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 p-5">
                 <div>
-                  <h2 className="text-lg font-bold text-[#172a25]">
+                  <h2 className="text-lg font-bold text-slate-900">
                     الطلب #{order.order_number}
                   </h2>
 
-                  <p className="mt-1 text-sm text-[#78857d]">
+                  <p className="mt-1 text-sm text-slate-500">
                     {new Date(order.created_at).toLocaleString("ar-LY", {
                       dateStyle: "medium",
                       timeStyle: "short",
@@ -193,7 +193,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                 <span
                   className={`rounded-full px-3 py-1 text-sm font-medium ${
                     statusStyles[order.status] ??
-                    "bg-[#f0f3ee] text-slate-700"
+                    "bg-slate-100 text-slate-700"
                   }`}
                 >
                   {statusLabels[order.status] ?? order.status}
@@ -202,7 +202,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
 
               <div className="grid gap-6 p-5 md:grid-cols-2">
                 <section className="space-y-3">
-                  <h3 className="font-semibold text-[#172a25]">
+                  <h3 className="font-semibold text-slate-900">
                     بيانات الزبون
                   </h3>
 
@@ -214,7 +214,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                     الهاتف:{" "}
                     <a
                       href={`tel:${order.customer_phone}`}
-                      className="text-[#27694b] underline underline-offset-2"
+                      className="text-blue-700 underline underline-offset-2"
                     >
                       {order.customer_phone}
                     </a>
@@ -234,8 +234,8 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                   )}
 
                   {order.note && (
-                    <div className="rounded-lg bg-[#f7f8f5] p-3">
-                      <p className="text-xs font-medium text-[#78857d]">
+                    <div className="rounded-lg bg-slate-50 p-3">
+                      <p className="text-xs font-medium text-slate-500">
                         ملاحظة الزبون
                       </p>
                       <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
@@ -246,7 +246,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                 </section>
 
                 <section>
-                  <h3 className="font-semibold text-[#172a25]">
+                  <h3 className="font-semibold text-slate-900">
                     الأصناف المطلوبة
                   </h3>
 
@@ -260,7 +260,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                           <p className="text-sm font-medium text-slate-800">
                             {item.product_name}
                           </p>
-                          <p className="mt-1 text-xs text-[#78857d]">
+                          <p className="mt-1 text-xs text-slate-500">
                             {Number(item.price).toFixed(2)} × {item.quantity}
                           </p>
                         </div>
@@ -272,11 +272,11 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                     ))}
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between border-t border-[#e5e9e1] pt-4">
-                    <span className="font-semibold text-[#172a25]">
+                  <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-4">
+                    <span className="font-semibold text-slate-900">
                       الإجمالي
                     </span>
-                    <span className="text-lg font-bold text-[#172a25]">
+                    <span className="text-lg font-bold text-slate-900">
                       {Number(order.total).toFixed(2)}
                     </span>
                   </div>
@@ -285,7 +285,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
 
               <form
                 action={updateOrderStatus}
-                className="flex flex-wrap items-end gap-3 border-t border-[#edf0e9] bg-[#f7f8f5] p-5"
+                className="flex flex-wrap items-end gap-3 border-t border-slate-100 bg-slate-50 p-5"
               >
                 <input type="hidden" name="orderId" value={order.id} />
 
@@ -301,7 +301,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
                     id={`status-${order.id}`}
                     name="status"
                     defaultValue={order.status}
-                    className="w-full rounded-xl border border-[#d7e0d6] bg-white px-3 py-2.5 text-sm text-[#172a25] outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-slate-500"
                   >
                     <option value="new">جديد</option>
                     <option value="processing">قيد المعالجة</option>
@@ -312,7 +312,7 @@ async function OrdersContent({ searchParams }: OrdersPageProps) {
 
                 <button
                   type="submit"
-                  className="rounded-xl bg-[#173f32] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#205744]"
+                  className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
                 >
                   حفظ الحالة
                 </button>
