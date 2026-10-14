@@ -97,6 +97,7 @@ export function StorefrontCartProvider({
 
   const cartStorageKey = `matjari-cart:${storeSlug}`;
   const detailsStorageKey = `matjari-customer:${storeSlug}`;
+  const orderAttemptStorageKey = `matjari-order-attempt:${storeSlug}`;
 
   // These effects hydrate client-only state from localStorage after mount.
   // The state updates are intentional; preserve SSR initialization and persistence order.
@@ -358,6 +359,45 @@ export function StorefrontCartProvider({
     setSubmitError("");
 
     try {
+      const orderPayload = {
+        customerName: name,
+        customerPhone: phone,
+        customerAddress: address,
+        customerNotes: notes,
+        items: cartProducts.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        })),
+      };
+      const fingerprint = JSON.stringify(orderPayload);
+      let requestKey = "";
+
+      try {
+        const savedAttempt = localStorage.getItem(orderAttemptStorageKey);
+        if (savedAttempt) {
+          const parsed: unknown = JSON.parse(savedAttempt);
+          if (
+            typeof parsed === "object" && parsed !== null &&
+            "fingerprint" in parsed && parsed.fingerprint === fingerprint &&
+            "requestKey" in parsed && typeof parsed.requestKey === "string" &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parsed.requestKey)
+          ) {
+            requestKey = parsed.requestKey;
+          }
+        }
+      } catch {
+        // A new key is generated if local storage contains invalid data.
+      }
+
+      if (!requestKey) {
+        requestKey = crypto.randomUUID();
+        try {
+          localStorage.setItem(orderAttemptStorageKey, JSON.stringify({ fingerprint, requestKey }));
+        } catch {
+          // The order can still be submitted, but retry protection requires browser storage.
+        }
+      }
+
       const response = await fetch(
         `/api/store/${encodeURIComponent(storeSlug)}/orders`,
         {
@@ -365,16 +405,7 @@ export function StorefrontCartProvider({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            customerName: name,
-            customerPhone: phone,
-            customerAddress: address,
-            customerNotes: notes,
-            items: cartProducts.map((item) => ({
-              productId: item.id,
-              quantity: item.quantity,
-            })),
-          }),
+          body: JSON.stringify({ ...orderPayload, requestKey }),
         },
       );
 
@@ -425,6 +456,19 @@ export function StorefrontCartProvider({
         order_number: order.order_number,
         total: Number(order.total),
       };
+
+      // Clear the retry token only after the server confirms the order.
+      try {
+        const savedAttempt = localStorage.getItem(orderAttemptStorageKey);
+        if (savedAttempt) {
+          const parsed: unknown = JSON.parse(savedAttempt);
+          if (typeof parsed === "object" && parsed !== null && "requestKey" in parsed && parsed.requestKey === requestKey) {
+            localStorage.removeItem(orderAttemptStorageKey);
+          }
+        }
+      } catch {
+        // The confirmed order should not be blocked by browser storage errors.
+      }
 
       // Clear the cart only after the server confirms order creation.
       setCart([]);
