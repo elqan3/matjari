@@ -36,6 +36,12 @@ export async function POST(
     );
   }
 
+  const requestKey = typeof body.requestKey === "string" ? body.requestKey : "";
+
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestKey)) {
+    return Response.json({ error: "مفتاح الطلب غير صالح. أعد المحاولة." }, { status: 400 });
+  }
+
   const customerName =
     typeof body.customerName === "string"
       ? body.customerName.trim()
@@ -159,6 +165,7 @@ export async function POST(
     p_customer_address: customerAddress,
     p_note: customerNotes || null,
     p_items: items,
+    p_idempotency_key: requestKey,
   });
 
   if (error) {
