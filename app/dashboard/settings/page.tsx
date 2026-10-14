@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { updateStoreSettings } from "./actions";
 import LogoUpload from "./logo-upload";
+import { canUseTheme, getEffectiveSubscriptionStatus } from "@/lib/subscriptions";
 
 type SettingsPageProps = {
   searchParams: Promise<{
@@ -18,6 +19,7 @@ const errorMessages: Record<string, string> = {
   invalid: "تحقق من البيانات المدخلة ثم حاول مجددًا.",
   slug_taken: "هذا الرابط مستخدم بالفعل. اختر رابطًا آخر.",
   server: "تعذر حفظ الإعدادات. حاول مجددًا.",
+  plan_theme: "هذا التصميم غير متاح في خطتك الحالية. اختر تصميمًا آخر أو اطلب الترقية من صفحة الاشتراك.",
 };
 
 async function StoreSettingsContent({
@@ -51,6 +53,24 @@ async function StoreSettingsContent({
   if (!store) {
     redirect("/dashboard/create-store");
   }
+
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code, trial_ends_at, ends_at")
+    .eq("store_id", store.id)
+    .maybeSingle();
+
+  if (subscriptionError) {
+    console.error("Failed to load subscription for settings:", subscriptionError.message);
+    throw new Error("تعذر تحميل حالة الاشتراك.");
+  }
+
+  const effectiveStatus = getEffectiveSubscriptionStatus(
+    subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
+  );
+  const canChooseTheme = (themeId: string) =>
+    (effectiveStatus === "trial" || effectiveStatus === "active") &&
+    Boolean(subscription && canUseTheme(subscription as Parameters<typeof canUseTheme>[0], themeId));
 
   return (
     <main
@@ -191,19 +211,22 @@ async function StoreSettingsContent({
                 ].map((theme) => (
                   <label
                     key={theme.id}
-                    className={`flex cursor-pointer gap-3 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-sm ${store.theme_preset === theme.id ? "border-[#173f32] bg-[#f3f7f2] ring-1 ring-[#173f32]" : "border-[#e5e9e1] bg-white"}`}
+                    className={`flex gap-3 rounded-2xl border p-4 transition ${canChooseTheme(theme.id) ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-sm" : "cursor-not-allowed opacity-55"} ${store.theme_preset === theme.id ? "border-[#173f32] bg-[#f3f7f2] ring-1 ring-[#173f32]" : "border-[#e5e9e1] bg-white"}`}
                   >
                     <input
                       type="radio"
                       name="theme_preset"
                       value={theme.id}
                       defaultChecked={store.theme_preset === theme.id}
-                      className="mt-1 accent-[#173f32]"
+                      disabled={!canChooseTheme(theme.id)}
+                      className="mt-1 accent-[#173f32] disabled:cursor-not-allowed"
                     />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2 font-semibold">
                         {theme.name}
-                        {theme.premium && (
+                        {!canChooseTheme(theme.id) ? (
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">يتطلب ترقية</span>
+                        ) : theme.premium && (
                           <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">مميز</span>
                         )}
                       </span>
@@ -218,7 +241,7 @@ async function StoreSettingsContent({
                 ))}
               </div>
               <p className="text-xs leading-5 text-[#8a7560]">
-                التصاميم المميزة جاهزة للتجربة الآن. ربطها بخطة مدفوعة سيتم عند تجهيز الاشتراكات والدفع، حتى لا نعرض دفعًا غير متاح حاليًا.
+                تختلف التصاميم المتاحة حسب الخطة. إذا كان التصميم مقفلًا، يمكنك مراجعة الخطط من صفحة الاشتراك.
               </p>
             </fieldset>
 

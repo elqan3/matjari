@@ -2,6 +2,7 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import { getEffectiveSubscriptionStatus } from "@/lib/subscriptions";
 
 type OrderItemInput = {
   productId: string;
@@ -151,6 +152,41 @@ export async function POST(
       detectSessionInUrl: false,
     },
   });
+
+  const { data: store, error: storeError } = await supabase
+    .from("stores")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (storeError || !store) {
+    return Response.json(
+      { error: "المتجر غير موجود أو غير متاح." },
+      { status: storeError ? 500 : 404 },
+    );
+  }
+
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code, trial_ends_at, ends_at")
+    .eq("store_id", store.id)
+    .maybeSingle();
+
+  if (subscriptionError) {
+    console.error("Order subscription check failed:", subscriptionError.message);
+    return Response.json({ error: "تعذر التحقق من حالة المتجر." }, { status: 500 });
+  }
+
+  const subscriptionState = getEffectiveSubscriptionStatus(
+    subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
+  );
+
+  if (subscriptionState !== "trial" && subscriptionState !== "active") {
+    return Response.json(
+      { error: "هذا المتجر غير متاح لاستقبال الطلبات حاليًا." },
+      { status: 403 },
+    );
+  }
 
   const { data, error } = await supabase.rpc("create_store_order", {
     p_store_slug: slug,

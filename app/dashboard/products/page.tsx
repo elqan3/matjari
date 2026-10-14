@@ -24,6 +24,8 @@ const errorMessages: Record<string, string> = {
   invalid_product: "بيانات المنتج غير صالحة.",
   not_found: "المنتج غير موجود أو لا يتبع متجرك.",
   server: "تعذرت العملية. تحقق من البيانات وحاول مجددًا.",
+  subscription_required: "انتهت تجربة متجرك أو اشتراكه. اختر خطة من صفحة الاشتراك لاستعادة استقبال المنتجات والطلبات.",
+  product_limit: "وصلت إلى الحد الأقصى لعدد المنتجات في خطتك. احذف منتجًا أو اطلب الترقية إلى خطة أعلى.",
 };
 
 async function ProductsContent({ searchParams }: PageProps) {
@@ -78,6 +80,21 @@ async function ProductsContent({ searchParams }: PageProps) {
   const categoryList = categories ?? [];
   const productList = products ?? [];
 
+  const { data: subscription } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code")
+    .eq("store_id", store.id)
+    .maybeSingle();
+  const productLimit = subscription?.status === "trial"
+    ? 30
+    : subscription?.status === "active" && subscription.plan_code === "basic"
+      ? 10
+      : subscription?.status === "active" && subscription.plan_code === "pro"
+        ? 30
+        : subscription?.status === "active" && subscription.plan_code === "professional"
+          ? null
+          : 0;
+
   const categoryNames = new Map(
     categoryList.map((category) => [category.id, category.name])
   );
@@ -102,6 +119,10 @@ async function ProductsContent({ searchParams }: PageProps) {
           </h1>
           <p className="mt-2 text-sm leading-6 text-[#718077]">
             أضف منتجات متجرك، وعدّل بياناتها وأسعارها وصورها، وتحكم في توفرها.
+          </p>
+          <p className="mt-2 text-xs font-semibold text-[#65756a]">
+            المنتجات: {new Intl.NumberFormat("ar-LY").format(productList.length)}{productLimit === null ? " · بلا حد أقصى في خطتك" : ` / ${new Intl.NumberFormat("ar-LY").format(productLimit)}`}
+            {productLimit === 0 && <> · <Link href="/dashboard/subscription" className="text-[#267451] underline">راجع اشتراكك</Link></>}
           </p>
         </header>
 
@@ -152,7 +173,15 @@ async function ProductsContent({ searchParams }: PageProps) {
 
         <section className="mt-6 rounded-2xl border border-[#e5e9e1] bg-white p-5 shadow-sm sm:p-6">
           <h2 className="mb-4 text-lg font-semibold">إضافة منتج جديد</h2>
-          <ProductCreateForm categories={categoryList} />
+          {productLimit === 0 || (productLimit !== null && productList.length >= productLimit) ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+              <p className="font-bold">{productLimit === 0 ? "اشتراكك غير نشط حاليًا." : "وصلت إلى الحد الأقصى لمنتجات خطتك."}</p>
+              <p className="mt-1">يمكنك الاحتفاظ بمنتجاتك الحالية. لرفع الحد أو استعادة الإضافة، راجع خطط الاشتراك.</p>
+              <Link href="/dashboard/subscription" className="mt-3 inline-flex rounded-lg bg-[#173f32] px-4 py-2 font-bold text-white">عرض الخطط</Link>
+            </div>
+          ) : (
+            <ProductCreateForm categories={categoryList} />
+          )}
         </section>
 
         <section className="mt-8">

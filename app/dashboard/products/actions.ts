@@ -146,6 +146,55 @@ fail("invalid_description");
 
 const { supabase, userId, store } = await getOwnedStore();
 
+const { data: subscription, error: subscriptionError } = await supabase
+  .from("store_subscriptions")
+  .select("status, plan_code, trial_ends_at, ends_at")
+  .eq("store_id", store.id)
+  .maybeSingle();
+
+if (subscriptionError || !subscription) {
+  console.error("Failed to load subscription for product creation:", subscriptionError?.message);
+  fail("server");
+}
+
+const now = Date.now();
+const subscriptionActive =
+  subscription.status === "trial"
+    ? new Date(subscription.trial_ends_at).getTime() > now
+    : subscription.status === "active" &&
+      Boolean(subscription.plan_code) &&
+      Boolean(subscription.ends_at) &&
+      new Date(subscription.ends_at!).getTime() > now;
+
+if (!subscriptionActive) {
+  fail("subscription_required");
+}
+
+const productLimit =
+  subscription.status === "trial"
+    ? 30
+    : subscription.plan_code === "basic"
+      ? 10
+      : subscription.plan_code === "pro"
+        ? 30
+        : subscription.plan_code === "professional"
+          ? null
+          : 0;
+
+if (productLimit !== null) {
+  const { count, error: countError } = await supabase
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("store_id", store.id);
+  if (countError) {
+    console.error("Failed to count store products:", countError.message);
+    fail("server");
+  }
+  if ((count ?? 0) >= productLimit) {
+    fail("product_limit");
+  }
+}
+
 await validateCategory(supabase, categoryId, store.id);
 
 let imageUrl: string | null = null;
