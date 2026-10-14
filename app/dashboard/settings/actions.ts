@@ -4,6 +4,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { canUseTheme, getEffectiveSubscriptionStatus } from "@/lib/subscriptions";
 
 export async function updateStoreSettings(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
@@ -52,6 +53,20 @@ export async function updateStoreSettings(formData: FormData) {
 
   if (!store) {
     redirect("/dashboard/create-store");
+  }
+
+  const { data: subscription, error: subscriptionError } = await supabase
+    .from("store_subscriptions")
+    .select("status, plan_code, trial_ends_at, ends_at")
+    .eq("store_id", store.id)
+    .maybeSingle();
+  const effectiveStatus = getEffectiveSubscriptionStatus(
+    subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
+  );
+  if (subscriptionError || !subscription ||
+      (effectiveStatus !== "trial" && effectiveStatus !== "active") ||
+      !canUseTheme(subscription as Parameters<typeof canUseTheme>[0], themePreset)) {
+    redirect("/dashboard/settings?error=plan_theme");
   }
 
   const { error: updateError } = await supabase

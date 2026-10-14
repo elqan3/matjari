@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getEffectiveSubscriptionStatus, getProductLimit } from "@/lib/subscriptions";
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
@@ -145,6 +146,30 @@ fail("invalid_description");
 }
 
 const { supabase, userId, store } = await getOwnedStore();
+
+const { data: subscription, error: subscriptionError } = await supabase
+  .from("store_subscriptions")
+  .select("status, plan_code, trial_ends_at, ends_at")
+  .eq("store_id", store.id)
+  .maybeSingle();
+if (subscriptionError || !subscription) {
+  console.error("Failed to load subscription for product creation:", subscriptionError?.message);
+  fail("subscription_required");
+}
+const effectiveStatus = getEffectiveSubscriptionStatus(
+  subscription as Parameters<typeof getEffectiveSubscriptionStatus>[0],
+);
+if (effectiveStatus !== "trial" && effectiveStatus !== "active") fail("subscription_required");
+const productLimit = getProductLimit(subscription as Parameters<typeof getProductLimit>[0]);
+if (productLimit !== null) {
+  const { count, error: countError } = await supabase
+    .from("products").select("id", { count: "exact", head: true }).eq("store_id", store.id);
+  if (countError) {
+    console.error("Failed to count products for subscription limit:", countError.message);
+    fail("server");
+  }
+  if ((count ?? 0) >= productLimit) fail("product_limit");
+}
 
 await validateCategory(supabase, categoryId, store.id);
 
